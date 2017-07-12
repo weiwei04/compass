@@ -1,0 +1,8 @@
+package: github.com/weiwei04/compass
+import:
+- package: github.com/kubernetes/helm
+  version: ^2.5.0
+- package: github.com/grpc/grpc-go
+  version: ~1.4.2
+- package: github.com/grpc-ecosystem/grpc-gateway
+  version: ~1.2.2

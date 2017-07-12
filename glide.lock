@@ -1,0 +1,10 @@
+hash: 4eb8faa01f71839af838f54cbb4de497c6ff3d861c33008f8bd8822eb163510c
+updated: 2017-07-12T15:47:00.154352766+08:00
+imports:
+- name: github.com/grpc-ecosystem/grpc-gateway
+  version: 589b126116b5fc961939b3e156c29e4d9d58222f
+- name: github.com/grpc/grpc-go
+  version: b15215fb911b24a5d61d57feec4233d610530464
+- name: github.com/kubernetes/helm
+  version: 012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6
+testImports: []
