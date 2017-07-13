@@ -11,7 +11,7 @@ service CompassService {
     // TODO: Allow filtering the set of releases by
     // release status. By default, ListAllReleases returns the releases who
     // current status is "Active".
-    rpc ListReleases(hapi.services.tiller.ListReleasesRequest) returns (stream hapi.services.tiller.ListReleasesResponse) {
+    rpc ListReleases(hapi.services.tiller.ListReleasesRequest) returns (hapi.services.tiller.ListReleasesResponse) {
     }
 
     // GetReleasesStatus retrieves status information for the specified release.
@@ -47,6 +47,6 @@ service CompassService {
     }
 
     //// RunReleaseTest executes the tests defined of a named release
-    rpc RunReleaseTest(hapi.services.tiller.TestReleaseRequest) returns (stream hapi.services.tiller.TestReleaseResponse) {
+    rpc RunReleaseTest(hapi.services.tiller.TestReleaseRequest) returns (hapi.services.tiller.TestReleaseResponse) {
     }
 }
