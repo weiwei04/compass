@@ -1,10 +1,20 @@
-hash: 4eb8faa01f71839af838f54cbb4de497c6ff3d861c33008f8bd8822eb163510c
-updated: 2017-07-12T15:47:00.154352766+08:00
+hash: a12c4b0c7ca61c26db4c1b2fcced71122b3957b71c64f79be41dc9cb5a7924cd
+updated: 2017-07-13T17:37:53.664726258+08:00
 imports:
-- name: github.com/grpc-ecosystem/grpc-gateway
-  version: 589b126116b5fc961939b3e156c29e4d9d58222f
-- name: github.com/grpc/grpc-go
-  version: b15215fb911b24a5d61d57feec4233d610530464
-- name: github.com/kubernetes/helm
+- name: github.com/golang/protobuf
+  version: 2bba0603135d7d7f5cb73b2125beeda19c09f4ef
+  subpackages:
+  - proto
+  - ptypes/any
+  - ptypes/timestamp
+- name: github.com/prometheus/client_golang
+  version: c5b7fccd204277076155f10851dad72b76a49317
+- name: golang.org/x/net
+  version: f2499483f923065a842d38eb4c7f1927e6fc6e6d
+  subpackages:
+  - context
+- name: google.golang.org/grpc
+  version: 8050b9cbc271307e5a716a9d782803d09b0d6f2d
+- name: k8s.io/helm
   version: 012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6
 testImports: []
