@@ -1,20 +1,63 @@
-hash: a12c4b0c7ca61c26db4c1b2fcced71122b3957b71c64f79be41dc9cb5a7924cd
-updated: 2017-07-13T17:37:53.664726258+08:00
+hash: f0ccb075a5263e898ebb23d406d62931c3efad3856337e3057966b8b0eaf42b2
+updated: 2017-07-17T12:09:38.410594111+08:00
 imports:
 - name: github.com/golang/protobuf
   version: 2bba0603135d7d7f5cb73b2125beeda19c09f4ef
   subpackages:
+  - jsonpb
   - proto
   - ptypes/any
   - ptypes/timestamp
+- name: github.com/grpc-ecosystem/go-grpc-middleware
+  version: f63a7dfb64c138bd93d5c5b896d8b33c4b08e000
+  subpackages:
+  - logging
+  - logging/zap
+  - tags
+- name: github.com/Masterminds/semver
+  version: 3f0ab6d4ab4bed1c61caf056b63a6e62190c7801
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
+- name: go.uber.org/atomic
+  version: 4e336646b2ef9fc6e47be8e21594178f98e5ebcf
+- name: go.uber.org/zap
+  version: 9cabc84638b70e564c3dab2766efcb1ded2aac9f
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - internal/multierror
+  - zapcore
 - name: golang.org/x/net
-  version: f2499483f923065a842d38eb4c7f1927e6fc6e6d
+  version: e90d6d0afc4c315a0d87a568ae68577cc15149a0
   subpackages:
   - context
+  - http2
+  - http2/hpack
+  - internal/timeseries
+  - lex/httplex
+  - trace
 - name: google.golang.org/grpc
   version: 8050b9cbc271307e5a716a9d782803d09b0d6f2d
+  subpackages:
+  - codes
+  - credentials
+  - grpclog
+  - internal
+  - keepalive
+  - metadata
+  - naming
+  - peer
+  - stats
+  - tap
+  - transport
 - name: k8s.io/helm
   version: 012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6
+  subpackages:
+  - pkg/proto/hapi/chart
+  - pkg/proto/hapi/release
+  - pkg/proto/hapi/services
+  - pkg/proto/hapi/version
+  - pkg/version
 testImports: []

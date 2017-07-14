@@ -1,4 +1,4 @@
-package: k8s.io/helm
+package: github.com/weiwei04/compass
 import:
 - package: golang.org/x/net
   subpackages:
@@ -15,3 +15,6 @@ import:
   version: 0.8.0
 - package: k8s.io/helm
   version: ~2.5.0
+- package: go.uber.org/zap
+  version: ~1.4.1
+- package: github.com/grpc-ecosystem/go-grpc-middleware

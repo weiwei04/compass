@@ -2,14 +2,15 @@ package compass
 
 import (
 	"io"
+	"log"
 	"time"
 
 	"google.golang.org/grpc"
 
 	context "golang.org/x/net/context"
+	"google.golang.org/grpc/metadata"
 	tiller "k8s.io/helm/pkg/proto/hapi/services"
-
-	services "github.com/weiwei04/compass/pkg/proto/compass/services"
+	//"k8s.io/helm/pkg/version"
 )
 
 type CompassServer struct {
@@ -22,12 +23,13 @@ func NewCompassServer(tillerAddr string) *CompassServer {
 	return &CompassServer{tillerAddr: tillerAddr}
 }
 
-var _ services.CompassServiceServer = &CompassServer{}
+var _ tiller.ReleaseServiceServer = &CompassServer{}
 
 func (s *CompassServer) Start() error {
 	opts := []grpc.DialOption{
 		grpc.WithTimeout(5 * time.Second),
 		grpc.WithBlock(),
+		grpc.WithInsecure(),
 	}
 	var err error
 	s.conn, err = grpc.Dial(s.tillerAddr, opts...)
@@ -42,8 +44,13 @@ func (s *CompassServer) Shutdown() {
 	s.conn.Close()
 }
 
-func (s *CompassServer) ListReleases(req *tiller.ListReleasesRequest, stream services.CompassService_ListReleasesServer) error {
-	var ctx context.Context
+func newContext() context.Context {
+	md := metadata.Pairs("x-helm-api-client", "2.5.0")
+	return metadata.NewContext(context.TODO(), md)
+}
+
+func (s *CompassServer) ListReleases(req *tiller.ListReleasesRequest, stream tiller.ReleaseService_ListReleasesServer) error {
+	ctx := newContext()
 	cli, err := s.tiller.ListReleases(ctx, req)
 	if err != nil {
 		return err
@@ -106,8 +113,8 @@ func (s *CompassServer) GetHistory(ctx context.Context, req *tiller.GetHistoryRe
 }
 
 // // RunReleaseTest executes the tests defined of a named release
-func (s *CompassServer) RunReleaseTest(req *tiller.TestReleaseRequest, stream services.CompassService_RunReleaseTestServer) error {
-	var ctx context.Context
+func (s *CompassServer) RunReleaseTest(req *tiller.TestReleaseRequest, stream tiller.ReleaseService_RunReleaseTestServer) error {
+	ctx := newContext()
 	cli, err := s.tiller.RunReleaseTest(ctx, req)
 	if err != nil {
 		return err
