@@ -13,12 +13,13 @@ import (
 )
 
 type CompassServer struct {
-	conn   *grpc.ClientConn
-	tiller tiller.ReleaseServiceClient
+	tillerAddr string
+	conn       *grpc.ClientConn
+	tiller     tiller.ReleaseServiceClient
 }
 
-func NewCompassServer() *CompassServer {
-	return &CompassServer{}
+func NewCompassServer(tillerAddr string) *CompassServer {
+	return &CompassServer{tillerAddr: tillerAddr}
 }
 
 var _ services.CompassServiceServer = &CompassServer{}
@@ -29,7 +30,7 @@ func (s *CompassServer) Start() error {
 		grpc.WithBlock(),
 	}
 	var err error
-	s.conn, err = grpc.Dial("addr", opts...)
+	s.conn, err = grpc.Dial(s.tillerAddr, opts...)
 	if err != nil {
 		return err
 	}

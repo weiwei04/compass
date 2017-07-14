@@ -33,7 +33,7 @@ func runGRPCServer() {
 		return
 	}
 
-	compassSrv := compass.NewCompassServer()
+	compassSrv := compass.NewCompassServer(*tillerAddr)
 	if err := compassSrv.Start(); err != nil {
 		return
 	}
