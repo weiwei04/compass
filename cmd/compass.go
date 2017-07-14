@@ -1,21 +1,31 @@
 package main
 
 import (
-	"fmt"
-	"google.golang.org/grpc"
+	"flag"
 	"net"
+	"os"
+	"syscall"
+
 	"github.com/weiwei04/compass/pkg/compass"
 	"github.com/weiwei04/compass/pkg/proto/compass/services"
+	"google.golang.org/grpc"
+
+	"os/signal"
+)
+
+var (
+	grpcAddr      = flag.String("listen", ":8910", "address:port to listen on")
+	enableTracing = flag.Bool("trace", false, "enable rpc tracing")
+	tillerAddr    = flag.String("tiller", "127.0.0.1:44134", "tiller")
 )
 
 func main() {
-	fmt.Println("vim-go")
+	flag.Parse()
+	runGRPCServer()
 }
 
-func start() {
+func runGRPCServer() {
 	var opts = []grpc.ServerOption{}
-
-	var grpcAddr *string
 
 	grpcSrv := grpc.NewServer(opts...)
 	lstn, err := net.Listen("tcp", *grpcAddr)
@@ -23,15 +33,27 @@ func start() {
 		return
 	}
 
+	compassSrv := compass.NewCompassServer()
+	if err := compassSrv.Start(); err != nil {
+		return
+	}
+	defer compassSrv.Shutdown()
+
+	services.RegisterCompassServiceServer(grpcSrv, compassSrv)
 	srvErrCh := make(chan error)
-
 	go func() {
-		compassSrv := compass.NewCompassServer()
-		services.RegisterCompassServiceServer(grpcSrv, compassSrv)
-		if err := grpcSrv.Serve(lstn); err != nil {
-			srvErrCh <- err
-		}
- 	} ()
+		srvErrCh <- grpcSrv.Serve(lstn)
+	}()
 
-	<-srvErrCh
+	stopCh := make(chan os.Signal, 1)
+	signal.Notify(stopCh, syscall.SIGTERM)
+	signal.Notify(stopCh, syscall.SIGINT)
+	go func() {
+		<-stopCh
+		grpcSrv.GracefulStop()
+	}()
+
+	if err := <-srvErrCh; err != nil {
+	} else {
+	}
 }
