@@ -2,7 +2,7 @@ package compass
 
 import (
 	"io"
-	"log"
+	//"log"
 	"time"
 
 	"google.golang.org/grpc"
