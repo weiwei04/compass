@@ -1,18 +1,15 @@
 workspace:
-  base: /go
-  path: src/github.com/drone/drone
+  base: /workspace
+  path: src/github.com/weiwei04/compass
 
 clone:
   compass.git:
     image: index.qiniu.com/spock/git-plugin:cs-proxy
-    path: /go/src/github.com/weiwei04/compass
-    branch: develop
     depth: 1
 
 pipeline:
     build:
-      image: alexwei/golang-glide:1.8.3-jessie
+      image: alexwei/golang-glide:1.8.3-cs-proxy
       commands:
-      - cd /go/src/github.com/weiwei04/compass
       - glide install
       - go test -cover $(go list ./... | grep -v /vendor/)
