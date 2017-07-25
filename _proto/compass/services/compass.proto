@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package services;
+
+import "hapi/services/tiller.proto";
+
+option go_package = "services";
+
+service CompassService {
+    // ListReleases retrieves release history.
+    // TODO: Allow filtering the set of releases by
+    // release status. By default, ListAllReleases returns the releases who
+    // current status is "Active".
+    rpc ListReleases(hapi.services.tiller.ListReleasesRequest) returns (stream hapi.services.tiller.ListReleasesResponse) {
+    }
+
+    // GetReleasesStatus retrieves status information for the specified release.
+    rpc GetReleaseStatus(hapi.services.tiller.GetReleaseStatusRequest) returns (hapi.services.tiller.GetReleaseStatusResponse) {
+    }
+
+    //// GetReleaseContent retrieves the release content (chart + value) for the specified release.
+    rpc GetReleaseContent(hapi.services.tiller.GetReleaseContentRequest) returns (hapi.services.tiller.GetReleaseContentResponse) {
+    }
+
+    //// UpdateRelease updates release content.
+    rpc UpdateRelease(hapi.services.tiller.UpdateReleaseRequest) returns (hapi.services.tiller.UpdateReleaseResponse) {
+    }
+
+    //// InstallRelease requests installation of a chart as a new release.
+    rpc InstallRelease(hapi.services.tiller.InstallReleaseRequest) returns (hapi.services.tiller.InstallReleaseResponse) {
+    }
+
+    //// UninstallRelease requests deletion of a named release.
+    rpc UninstallRelease(hapi.services.tiller.UninstallReleaseRequest) returns (hapi.services.tiller.UninstallReleaseResponse) {
+    }
+
+    //// GetVersion returns the current version of the server.
+    rpc GetVersion(hapi.services.tiller.GetVersionRequest) returns (hapi.services.tiller.GetVersionResponse) {
+    }
+
+    //// RollbackRelease rolls back a release to a previous version.
+    rpc RollbackRelease(hapi.services.tiller.RollbackReleaseRequest) returns (hapi.services.tiller.RollbackReleaseResponse) {
+    }
+
+    //// ReleaseHistory retrieves a releasse's history.
+    rpc GetHistory(hapi.services.tiller.GetHistoryRequest) returns (hapi.services.tiller.GetHistoryResponse) {
+    }
+
+    //// RunReleaseTest executes the tests defined of a named release
+    rpc RunReleaseTest(hapi.services.tiller.TestReleaseRequest) returns (stream hapi.services.tiller.TestReleaseResponse) {
+    }
+}

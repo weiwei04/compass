@@ -1,8 +1,20 @@
 package: github.com/weiwei04/compass
 import:
-- package: github.com/kubernetes/helm
-  version: ^2.5.0
-- package: github.com/grpc/grpc-go
-  version: ~1.4.2
-- package: github.com/grpc-ecosystem/grpc-gateway
-  version: ~1.2.2
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: github.com/golang/protobuf
+  version: 2bba0603135d7d7f5cb73b2125beeda19c09f4ef
+  subpackages:
+  - proto
+  - ptypes/any
+  - ptypes/timestamp
+- package: google.golang.org/grpc
+  version: 1.2.1
+- package: github.com/prometheus/client_golang
+  version: 0.8.0
+- package: k8s.io/helm
+  version: ~2.5.0
+- package: go.uber.org/zap
+  version: ~1.4.1
+- package: github.com/grpc-ecosystem/go-grpc-middleware
