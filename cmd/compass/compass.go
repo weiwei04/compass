@@ -8,6 +8,8 @@ import (
 
 	"time"
 
+	"os/signal"
+
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -16,7 +18,6 @@ import (
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 	tiller "k8s.io/helm/pkg/proto/hapi/services"
-	"os/signal"
 )
 
 var (
