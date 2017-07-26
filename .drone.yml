@@ -12,5 +12,7 @@ pipeline:
       image: alexwei/golang-glide:1.8.3-cs-proxy
       commands:
       - export GOPATH=$GOPATH:/workspace
-      - glide install
-      - go test -cover $(go list ./... | grep -v /vendor/)
+      - make bootstrap
+      - make build
+      - make test
+      - make clean
