@@ -2,7 +2,7 @@ package registry
 
 import (
 	"fmt"
-
+	"github.com/caicloud/helm-registry/pkg/rest/v1"
 	"github.com/urfave/cli"
 )
 
@@ -20,7 +20,19 @@ var listSpaceCommand = cli.Command{
 	Name:  "list",
 	Usage: "",
 	Action: func(ctx *cli.Context) error {
-		fmt.Println("list namepsace")
+		c, err := v1.NewClient("http://helm-registry.ke-cs.dev.qiniu.io")
+		if err != nil {
+			return err
+		}
+		res, err := c.ListSpaces(0, 10000)
+		if err != nil {
+			return err
+		}
+		fmt.Println("spaces:")
+		for _, item := range res.Items {
+			fmt.Println("\t\t", item)
+		}
+		fmt.Println("-----------------------------------------")
 		return nil
 	},
 }
@@ -34,7 +46,15 @@ var createSpaceCommand = cli.Command{
 			return err
 		}
 		ns := ctx.Args().First()
-		fmt.Println("create namespace ", ns)
+		c, err := v1.NewClient("http://helm-registry.ke-cs.dev.qiniu.io")
+		if err != nil {
+			return err
+		}
+		res, err := c.CreateSpace(ns)
+		if err != nil {
+			return err
+		}
+		fmt.Println("created space", res.Name, res.Link)
 		return nil
 	},
 }
@@ -47,7 +67,10 @@ var deleteSpaceCommand = cli.Command{
 			return err
 		}
 		ns := ctx.Args().First()
-		fmt.Println("delete namespace ", ns)
-		return nil
+		c, err := v1.NewClient("http://helm-registry.ke-cs.dev.qiniu.io")
+		if err != nil {
+			return err
+		}
+		return c.DeleteSpace(ns)
 	},
 }
