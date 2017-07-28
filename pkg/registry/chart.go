@@ -1,16 +1,12 @@
 package registry
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/caicloud/helm-registry/pkg/rest/v1"
+	"io/ioutil"
+
 	"github.com/urfave/cli"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"strings"
-	//hapi "k8s.io/helm/pkg/proto/hapi/chart"
-	//"k8s.io/helm/pkg/chartutil"
-	//"encoding/json"
-	"encoding/json"
 )
 
 type chartValues map[string]interface{}
@@ -36,37 +32,37 @@ var listChartCommand = cli.Command{
 		if err := checkArgs(ctx, 1, exactArgs); err != nil {
 			return err
 		}
-		space := ctx.Args().First()
-		c, err := v1.NewClient("http://helm-registry.ke-cs.dev.qiniu.io")
+		arg := ctx.Args().First()
+		c, err := defaultClient()
 		if err != nil {
 			return err
 		}
 
-		parts := strings.Split(space, "/")
-		if len(parts) == 1 {
-			res, err := c.ListCharts(parts[0], 0, 1000)
+		space, name, err := splitSpaceChart(arg)
+		if err != nil {
+			return err
+		}
+		if name == "" {
+			res, err := c.ListCharts(space, 0, 1000)
 			if err != nil {
 				return err
 			}
-			fmt.Println("charts in space", parts[0])
-			for _, item := range res.Items {
-				fmt.Println("\t\t", item)
-			}
-			fmt.Println("-----------------------------------------")
-		} else if len(parts) == 2 {
-			res, err := c.ListVersions(parts[0], parts[1], 0, 1000)
-			if err != nil {
-				return err
-			}
-			fmt.Println("chart", parts[1], "in space", parts[0])
+			fmt.Println("charts in space", space)
 			for _, item := range res.Items {
 				fmt.Println("\t\t", item)
 			}
 			fmt.Println("-----------------------------------------")
 		} else {
-			return fmt.Errorf("invalid name `%s` must be `space` or `space/chartname`", space)
+			res, err := c.ListVersions(space, name, 0, 1000)
+			if err != nil {
+				return err
+			}
+			fmt.Println("chart", name, "under space", space)
+			for _, item := range res.Items {
+				fmt.Println("\t\t", item)
+			}
+			fmt.Println("-----------------------------------------")
 		}
-
 		return nil
 	},
 }
@@ -86,7 +82,7 @@ var pushChartCommand = cli.Command{
 			return err
 		}
 		space := ctx.Args().First()
-		c, err := v1.NewClient("http://helm-registry.ke-cs.dev.qiniu.io")
+		c, err := defaultClient()
 		if err != nil {
 			return err
 		}
@@ -108,26 +104,17 @@ var inspectChartCommand = cli.Command{
 		if err := checkArgs(ctx, 1, exactArgs); err != nil {
 			return err
 		}
-		c, err := v1.NewClient("http://helm-registry.ke-cs.dev.qiniu.io")
+		c, err := defaultClient()
 		if err != nil {
 			return err
 
 		}
-		name := ctx.Args().First()
-		parts := strings.Split(name, "/")
-
-		if len(parts) != 2 {
-			return fmt.Errorf("invalid name `%s` must be `space` or `space/chartname:version`", name)
+		arg := ctx.Args().First()
+		space, name, ver, err := splitSpaceChartVer(arg)
+		if err != nil {
+			return err
 		}
-		space := parts[0]
-		chart := parts[1]
-		parts = strings.Split(chart, ":")
-		if len(parts) != 2 {
-			return fmt.Errorf("invalid name `%s` must be `space` or `space/chartname:version`", name)
-		}
-		chartName := parts[0]
-		chartVer := parts[1]
-		res, err := c.FetchVersionMetadata(space, chartName, chartVer)
+		res, err := c.FetchVersionMetadata(space, name, ver)
 		if err != nil {
 			return err
 		}
@@ -153,24 +140,16 @@ var getChartFileCommand = cli.Command{
 		if err := checkArgs(ctx, 1, exactArgs); err != nil {
 			return err
 		}
-		c, err := v1.NewClient("http://helm-registry.ke-cs.dev.qiniu.io")
+		c, err := defaultClient()
 		if err != nil {
 			return err
 		}
-		name := ctx.Args().First()
-		parts := strings.Split(name, "/")
-		if len(parts) != 2 {
-			return fmt.Errorf("invalid name `%s` must be `space/chart:version`", name)
+		arg := ctx.Args().First()
+		space, name, ver, err := splitSpaceChartVer(arg)
+		if err != nil {
+			return err
 		}
-		space := parts[0]
-		chart := parts[1]
-		parts = strings.Split(chart, ":")
-		if len(parts) != 2 {
-			return fmt.Errorf("invalid name `%s` must be `space/chart:version`", name)
-		}
-		chartName := parts[0]
-		chartVer := parts[1]
-		raw, err := c.FetchVersionValues(space, chartName, chartVer)
+		raw, err := c.FetchVersionValues(space, name, ver)
 		if err != nil {
 			return err
 		}
@@ -189,7 +168,7 @@ var getChartFileCommand = cli.Command{
 			return fmt.Errorf("unsupported output format %s", ctx.String("output"))
 		}
 
-		fmt.Println("chart", name, " values")
+		fmt.Println("chart", arg, " values")
 		fmt.Println()
 		fmt.Println(string(data))
 		fmt.Println("------------------------------")

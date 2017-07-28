@@ -3,7 +3,9 @@ package registry
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/caicloud/helm-registry/pkg/rest/v1"
 	"github.com/urfave/cli"
 )
 
@@ -39,11 +41,42 @@ func checkArgs(context *cli.Context, expected, checkType int) error {
 	return nil
 }
 
-// fatal prints the error's details if it is a libcontainer specific error type
-// then exits the program with an exit status of 1.
-//func fatal(err error) {
-//	// make sure the error is written to the logger
-//	logrus.Error(err)
-//	fmt.Fprintln(os.Stderr, err)
-//	os.Exit(1)
-//}
+var registryAddr string
+
+func init() {
+	registryAddr = os.Getenv("HELM_REGISTRY_ADDR")
+	if registryAddr == "" {
+		registryAddr = "http://localhost:8900"
+	}
+}
+
+func defaultClient() (*v1.Client, error) {
+	return v1.NewClient(registryAddr)
+}
+
+func splitSpaceChart(arg string) (string, string, error) {
+	parts := strings.Split(arg, "/")
+	if len(parts) == 1 {
+		return parts[0], "", nil
+	} else if len(parts) == 2 {
+		return parts[0], parts[1], nil
+	}
+	return "", "", fmt.Errorf("invalid arg `%s` must be `space[/chart]`", arg)
+}
+
+func splitSpaceChartVer(arg string) (string, string, string, error) {
+	parts := strings.Split(arg, "/")
+
+	if len(parts) != 2 {
+		return "", "", "", fmt.Errorf("invalid arg `%s` must be `space/chart:ver`", arg)
+	}
+	space := parts[0]
+	chart := parts[1]
+	parts = strings.Split(chart, ":")
+	if len(parts) != 2 {
+		return "", "", "", fmt.Errorf("invalid arg `%s` must be `space/chartver`", arg)
+	}
+	name := parts[0]
+	ver := parts[1]
+	return space, name, ver, nil
+}
