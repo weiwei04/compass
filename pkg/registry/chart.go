@@ -28,8 +28,10 @@ var ChartCommand = cli.Command{
 
 var listChartCommand = cli.Command{
 	Name: "list",
-	Usage: `list namespace for example list library
-  list namespace/chartname for example list library/redis`,
+	Usage: `list space[/chart]
+	  for example:
+	    list myspace (this will list chart under space:myspace)
+	    list myspace/mychart (this will list versions of myspace/mychart)`,
 	Action: func(ctx *cli.Context) error {
 		if err := checkArgs(ctx, 1, exactArgs); err != nil {
 			return err
@@ -70,8 +72,10 @@ var listChartCommand = cli.Command{
 }
 
 var pushChartCommand = cli.Command{
-	Name:  "push",
-	Usage: `push space chart.tgz`,
+	Name: "push",
+	Usage: `push space chart
+	  for example:
+	    push myspace mychart.tgz (this will push mychart.tgz under mysapce)`,
 	Action: func(ctx *cli.Context) error {
 		if err := checkArgs(ctx, 2, exactArgs); err != nil {
 			return err
@@ -96,8 +100,10 @@ var pushChartCommand = cli.Command{
 }
 
 var inspectChartCommand = cli.Command{
-	Name:  "inspect",
-	Usage: `inspect namespace/chartname:version for example library/redis:0.1.0`,
+	Name: "inspect",
+	Usage: `inspect space/chart:ver
+	  for example:
+	    inspect myspace/mychart:0.0.1 (this will get myspace/mychart:0.0.1 metadata)`,
 	Action: func(ctx *cli.Context) error {
 		if err := checkArgs(ctx, 1, exactArgs); err != nil {
 			return err
@@ -132,8 +138,10 @@ var inspectChartCommand = cli.Command{
 }
 
 var getChartFileCommand = cli.Command{
-	Name:  "values",
-	Usage: `values space/chart:version`,
+	Name: "values",
+	Usage: `values space/chart:ver
+	  for example:
+	    values myspace/mychart:0.0.1 (this will get myspace/mychart:0.0.1 values.yaml content)`,
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "output, o",
