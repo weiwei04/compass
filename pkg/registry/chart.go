@@ -47,7 +47,7 @@ var listChartCommand = cli.Command{
 			if err != nil {
 				return err
 			}
-			fmt.Println("charts in space", space)
+			fmt.Println(arg)
 			for _, item := range res.Items {
 				fmt.Println("\t\t", item)
 			}
@@ -57,7 +57,7 @@ var listChartCommand = cli.Command{
 			if err != nil {
 				return err
 			}
-			fmt.Println("chart", name, "under space", space)
+			fmt.Println(arg)
 			for _, item := range res.Items {
 				fmt.Println("\t\t", item)
 			}
@@ -90,7 +90,7 @@ var pushChartCommand = cli.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Println("push chart", res.Chart, res.Link)
+		fmt.Println(res.Chart, "at", res.Link)
 		return nil
 	},
 }
@@ -100,6 +100,13 @@ var inspectChartCommand = cli.Command{
 	Usage: `inspect space/chart:ver
 	  for example:
 	    inspect myspace/mychart:0.0.1 (this will get myspace/mychart:0.0.1 metadata)`,
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "output, o",
+			Value: "yaml",
+			Usage: "-o yaml|json",
+		},
+	},
 	Action: func(ctx *cli.Context) error {
 		if err := checkArgs(ctx, 1, exactArgs); err != nil {
 			return err
@@ -107,19 +114,28 @@ var inspectChartCommand = cli.Command{
 		c, err := defaultClient()
 		if err != nil {
 			return err
-
 		}
 		arg := ctx.Args().First()
 		space, name, ver, err := splitSpaceChartVer(arg)
 		if err != nil {
 			return err
 		}
-		res, err := c.FetchVersionMetadata(space, name, ver)
+		meta, err := c.FetchVersionMetadata(space, name, ver)
 		if err != nil {
 			return err
 		}
-		fmt.Println(name, "metadata")
-		fmt.Println(res.String())
+		var data []byte
+		switch ctx.String("output") {
+		case "yaml":
+			data, _ = yaml.Marshal(meta)
+		case "json":
+			data, _ = json.MarshalIndent(meta, "", "  ")
+		default:
+			return fmt.Errorf("unsupported output format %s", ctx.String("output"))
+		}
+		fmt.Println(arg, "metadata")
+		fmt.Println(string(data))
+		fmt.Println("-----------------------------------------")
 		return nil
 	},
 }
@@ -168,10 +184,10 @@ var getChartFileCommand = cli.Command{
 			return fmt.Errorf("unsupported output format %s", ctx.String("output"))
 		}
 
-		fmt.Println("chart", arg, " values")
+		fmt.Println(arg, " values")
 		fmt.Println()
 		fmt.Println(string(data))
-		fmt.Println("------------------------------")
+		fmt.Println("-----------------------------------------")
 		return nil
 	},
 }
