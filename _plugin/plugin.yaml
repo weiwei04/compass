@@ -1,6 +1,0 @@
----
-name: "registry"
-version: "0.0.1"
-usage: "list|inspect|push chart with helm-registry"
-description: "list|inspect|push chart with helm-registry, shuould export HELM_REGISTRY_ADDR env"
-command: "$HELM_PLUGIN_DIR/helm-registry-plugin"
