@@ -3,46 +3,12 @@ package compass
 import (
 	"io"
 	//"log"
-	"time"
-
-	"google.golang.org/grpc"
 
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc/metadata"
 	tiller "k8s.io/helm/pkg/proto/hapi/services"
 	//"k8s.io/helm/pkg/version"
 )
-
-type CompassServer struct {
-	tillerAddr string
-	conn       *grpc.ClientConn
-	tiller     tiller.ReleaseServiceClient
-}
-
-func NewCompassServer(tillerAddr string) *CompassServer {
-	return &CompassServer{tillerAddr: tillerAddr}
-}
-
-var _ tiller.ReleaseServiceServer = &CompassServer{}
-
-func (s *CompassServer) Start() error {
-	opts := []grpc.DialOption{
-		grpc.WithTimeout(5 * time.Second),
-		grpc.WithBlock(),
-		grpc.WithInsecure(),
-	}
-	var err error
-	s.conn, err = grpc.Dial(s.tillerAddr, opts...)
-	if err != nil {
-		return err
-	}
-	s.tiller = tiller.NewReleaseServiceClient(s.conn)
-	return nil
-}
-
-func (s *CompassServer) Shutdown() {
-	s.conn.Close()
-}
 
 func newContext() context.Context {
 	md := metadata.Pairs("x-helm-api-client", "2.5.0")
