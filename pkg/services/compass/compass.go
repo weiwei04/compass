@@ -7,19 +7,27 @@ import (
 
 	"google.golang.org/grpc"
 
-	tillerapi "k8s.io/helm/pkg/proto/hapi/services"
-	//"k8s.io/helm/pkg/version"
 	compassapi "github.com/weiwei04/compass/pkg/api/services/compass"
+	"github.com/weiwei04/compass/pkg/chart"
+	tillerapi "k8s.io/helm/pkg/proto/hapi/services"
 )
 
-type CompassServer struct {
-	tillerAddr string
-	conn       *grpc.ClientConn
-	tiller     tillerapi.ReleaseServiceClient
+type Config struct {
+	TillerAddr   string
+	RegistryAddr string
 }
 
-func NewCompassServer(tillerAddr string) *CompassServer {
-	return &CompassServer{tillerAddr: tillerAddr}
+type CompassServer struct {
+	config   Config
+	registry chart.Store
+	conn     *grpc.ClientConn
+	tiller   tillerapi.ReleaseServiceClient
+}
+
+func NewCompassServer(config Config) *CompassServer {
+	return &CompassServer{
+		config: config,
+	}
 }
 
 var _ compassapi.CompassServiceServer = &CompassServer{}
@@ -27,13 +35,18 @@ var _ compassapi.CompassServiceServer = &CompassServer{}
 var _ tillerapi.ReleaseServiceServer = &CompassServer{}
 
 func (s *CompassServer) Start() error {
+	var err error
+	s.registry, err = chart.NewHelmRegistryStore(s.config.RegistryAddr)
+	if err != nil {
+		return err
+	}
+
 	opts := []grpc.DialOption{
 		grpc.WithTimeout(5 * time.Second),
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
 	}
-	var err error
-	s.conn, err = grpc.Dial(s.tillerAddr, opts...)
+	s.conn, err = grpc.Dial(s.config.TillerAddr, opts...)
 	if err != nil {
 		return err
 	}
