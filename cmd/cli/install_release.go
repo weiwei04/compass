@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/urfave/cli"
-	"github.com/weiwei04/compass/pkg/api/services/compass"
-	"google.golang.org/grpc"
 	"io/ioutil"
-	hapi "k8s.io/helm/pkg/proto/hapi/chart"
 	"os"
-	"time"
+
+	"github.com/urfave/cli"
+	capi "github.com/weiwei04/compass/pkg/api/client"
+	hapi "k8s.io/helm/pkg/proto/hapi/chart"
 )
 
 var installReleaseCommand = cli.Command{
@@ -56,19 +55,20 @@ var installReleaseCommand = cli.Command{
 			values = &hapi.Config{Raw: string(data)}
 		}
 
-		client, conn, err := defaultClient()
+		client := defaultClient()
+		err := client.Connect()
 		if err != nil {
 			return err
 		}
-		defer conn.Close()
+		defer client.Shutdown()
 
-		req := &compass.CreateCompassReleaseRequest{
+		req := &capi.CreateReleaseRequest{
 			Chart:     chart,
 			Name:      releaseName,
 			Namespace: namespace,
 			Values:    values,
 		}
-		resp, err := client.CreateCompassRelease(context.Background(), req)
+		resp, err := client.CreateRelease(context.Background(), req)
 		if err != nil {
 			return err
 		}
@@ -77,20 +77,11 @@ var installReleaseCommand = cli.Command{
 	},
 }
 
-var defaultClient = func() (compass.CompassServiceClient, *grpc.ClientConn, error) {
+var defaultClient = func() capi.CompassClient {
 	compassAddr := os.Getenv("COMPASS_ADDR")
 	if compassAddr == "" {
 		compassAddr = "http://127.0.0.1:8900"
 	}
-	opts := []grpc.DialOption{
-		grpc.WithTimeout(5 * time.Second),
-		grpc.WithBlock(),
-		grpc.WithInsecure(),
-	}
-	conn, err := grpc.Dial(compassAddr, opts...)
-	if err != nil {
-		return nil, nil, err
-	}
-	client := compass.NewCompassServiceClient(conn)
-	return client, conn, nil
+
+	return capi.NewCompassClient(compassAddr)
 }

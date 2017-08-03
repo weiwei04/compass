@@ -54,7 +54,6 @@ func (s *CompassServer) UpdateRelease(ctx context.Context, req *tiller.UpdateRel
 
 // // InstallRelease requests installation of a chart as a new release.
 func (s *CompassServer) InstallRelease(ctx context.Context, req *tiller.InstallReleaseRequest) (*tiller.InstallReleaseResponse, error) {
-	// TODO: download chart and install
 	return s.tiller.InstallRelease(ctx, req)
 }
 
