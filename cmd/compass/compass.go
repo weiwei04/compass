@@ -13,11 +13,12 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	"github.com/weiwei04/compass/pkg/services/compass"
+	compassapi "github.com/weiwei04/compass/pkg/api/services/compass"
+	compass "github.com/weiwei04/compass/pkg/services/compass"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
-	tiller "k8s.io/helm/pkg/proto/hapi/services"
+	tillerapi "k8s.io/helm/pkg/proto/hapi/services"
 )
 
 var (
@@ -71,7 +72,8 @@ func runGRPCServer() {
 	}
 	defer compassSrv.Shutdown()
 
-	tiller.RegisterReleaseServiceServer(grpcSrv, compassSrv)
+	compassapi.RegisterCompassServiceServer(grpcSrv, compassSrv)
+	tillerapi.RegisterReleaseServiceServer(grpcSrv, compassSrv)
 	srvErrCh := make(chan error)
 	go func() {
 		sugger.Infof("compass server start to serve")

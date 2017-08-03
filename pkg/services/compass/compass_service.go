@@ -15,9 +15,14 @@ func (s *CompassServer) CreateCompassRelease(ctx context.Context, req *api.Creat
 		return &resp, err
 	}
 
+	// TODO: merge values
+	values := req.Values
+	if values == nil {
+		values = chart.Values
+	}
 	tillerReq := &tiller.InstallReleaseRequest{
 		Chart:     chart,
-		Values:    req.Values,
+		Values:    values,
 		DryRun:    false,
 		Name:      req.Name,
 		Namespace: req.Namespace,
