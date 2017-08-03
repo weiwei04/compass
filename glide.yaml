@@ -18,7 +18,7 @@ import:
 - package: go.uber.org/zap
   version: ~1.4.1
 - package: github.com/grpc-ecosystem/go-grpc-middleware
-- package: github.com/caicloud/helm-registry
 - package: github.com/urfave/cli
   version: ~1.19.1
 - package: gopkg.in/yaml.v2
+- package: github.com/caicloud/helm-registry

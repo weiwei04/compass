@@ -1,6 +1,8 @@
-hash: 3c8c7758a2370123f88302b081a44e7398705c84fcf8fe60461cf384d83eff4d
-updated: 2017-07-28T14:20:17.099321824+08:00
+hash: 7ce3b65e633d04e85f980f36eabae76e45d60f4943bc131803aa92b04d11f665
+updated: 2017-08-02T14:20:30.581357068+08:00
 imports:
+- name: github.com/BurntSushi/toml
+  version: b26d9c308763d68093482582cea63d69be07a0f0
 - name: github.com/caicloud/helm-registry
   version: 90def3c24080972ac782a8a626fefb99f1d0eab5
   subpackages:
@@ -10,6 +12,20 @@ imports:
   - pkg/rest
   - pkg/rest/v1
   - pkg/storage
+- name: github.com/facebookgo/symwalk
+  version: 42004b9f322246749dd73ad71008b1f3160c0052
+- name: github.com/ghodss/yaml
+  version: 0ca9ea5df5451ffdf184b4428c902747c2c11cd7
+- name: github.com/gobwas/glob
+  version: bea32b9cd2d6f55753d94a28e959b13f0244797a
+  subpackages:
+  - compiler
+  - match
+  - syntax
+  - syntax/ast
+  - syntax/lexer
+  - util/runes
+  - util/strings
 - name: github.com/golang/protobuf
   version: 2bba0603135d7d7f5cb73b2125beeda19c09f4ef
   subpackages:
@@ -70,9 +86,15 @@ imports:
   - transport
 - name: gopkg.in/yaml.v2
   version: 25c4ec802a7d637f88d584ab26798e94ad14c13b
+- name: k8s.io/apimachinery
+  version: dc1f89aff9a7509782bde3b68824c8043a3e58cc
+  subpackages:
+  - pkg/version
 - name: k8s.io/helm
   version: 7cf31e8d9a026287041bae077b09165be247ae66
   subpackages:
+  - pkg/chartutil
+  - pkg/ignore
   - pkg/proto/hapi/chart
   - pkg/proto/hapi/release
   - pkg/proto/hapi/services

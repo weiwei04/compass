@@ -13,17 +13,19 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	"github.com/weiwei04/compass/pkg/compass"
+	compassapi "github.com/weiwei04/compass/pkg/api/services/compass"
+	compass "github.com/weiwei04/compass/pkg/services/compass"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
-	tiller "k8s.io/helm/pkg/proto/hapi/services"
+	tillerapi "k8s.io/helm/pkg/proto/hapi/services"
 )
 
 var (
 	grpcAddr      = flag.String("listen", ":8910", "address:port to listen on")
 	enableTracing = flag.Bool("trace", false, "enable rpc tracing")
-	tillerAddr    = flag.String("tiller", "127.0.0.1:44134", "tiller")
+	tillerAddr    = flag.String("tiller", "127.0.0.1:44134", "tiller address, default: 127.0.0.1:44134")
+	registryAddr  = flag.String("registry", "http://127.0.0.1:8900", "registry address, default: http://127.0.0.1:8900")
 )
 
 func main() {
@@ -60,14 +62,18 @@ func runGRPCServer() {
 		return
 	}
 
-	compassSrv := compass.NewCompassServer(*tillerAddr)
+	compassSrv := compass.NewCompassServer(compass.Config{
+		TillerAddr:   *tillerAddr,
+		RegistryAddr: *registryAddr,
+	})
 	if err := compassSrv.Start(); err != nil {
 		sugger.Errorf("start compass server failed, err %s", err)
 		return
 	}
 	defer compassSrv.Shutdown()
 
-	tiller.RegisterReleaseServiceServer(grpcSrv, compassSrv)
+	compassapi.RegisterCompassServiceServer(grpcSrv, compassSrv)
+	tillerapi.RegisterReleaseServiceServer(grpcSrv, compassSrv)
 	srvErrCh := make(chan error)
 	go func() {
 		sugger.Infof("compass server start to serve")
