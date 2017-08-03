@@ -1,4 +1,4 @@
-package main
+package clicommands
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	hapi "k8s.io/helm/pkg/proto/hapi/chart"
 )
 
-var installReleaseCommand = cli.Command{
+var ReleaseCommand = cli.Command{
 	Name:  "install",
 	Usage: "",
 	Flags: []cli.Flag{
