@@ -1,9 +1,9 @@
 package compass
 
 import (
-
-	//"log"
 	"time"
+
+	"go.uber.org/zap"
 
 	"google.golang.org/grpc"
 
@@ -19,6 +19,7 @@ type Config struct {
 
 type CompassServer struct {
 	config   Config
+	logger   *zap.Logger
 	registry chart.Store
 	conn     *grpc.ClientConn
 	tiller   tillerapi.ReleaseServiceClient
@@ -36,8 +37,13 @@ var _ tillerapi.ReleaseServiceServer = &CompassServer{}
 
 func (s *CompassServer) Start() error {
 	var err error
+	if s.logger, err = zap.NewProduction(); err != nil {
+		return err
+	}
 	s.registry, err = chart.NewHelmRegistryStore(s.config.RegistryAddr)
 	if err != nil {
+		s.logger.Error("NewHelmRegistryStore failed",
+			zap.Error(err))
 		return err
 	}
 
@@ -48,6 +54,9 @@ func (s *CompassServer) Start() error {
 	}
 	s.conn, err = grpc.Dial(s.config.TillerAddr, opts...)
 	if err != nil {
+		s.logger.Error("dial tiller failed",
+			zap.String("tillerAddr", s.config.TillerAddr),
+			zap.Error(err))
 		return err
 	}
 	s.tiller = tillerapi.NewReleaseServiceClient(s.conn)
@@ -56,4 +65,5 @@ func (s *CompassServer) Start() error {
 
 func (s *CompassServer) Shutdown() {
 	s.conn.Close()
+	s.logger.Sync()
 }

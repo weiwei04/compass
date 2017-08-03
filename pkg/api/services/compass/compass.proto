@@ -13,7 +13,7 @@ message CreateCompassReleaseRequest {
   string namespace = 3;
   hapi.chart.Config values = 4;
   int64 timeout = 5;
-  bool waith = 6;
+  bool wait = 6;
 }
 
 message CreateCompassReleaseResponse {

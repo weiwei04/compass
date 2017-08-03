@@ -16,7 +16,7 @@ Avaiable Commands:
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "compass-cli"
+	app.Name = "compass"
 	app.Usage = usage
 	app.Commands = []cli.Command{
 		installReleaseCommand,
