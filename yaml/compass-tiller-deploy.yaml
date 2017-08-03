@@ -25,7 +25,7 @@ spec:
         name: tiller
     spec:
       containers:
-      - image: hub.c.163.com/weiwei04/compass:v0.0.8
+      - image: alexwei/compass:0.0.9
         command:
         - compass
         args:
@@ -77,8 +77,6 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
-      nodeSelector:
-        beta.kubernetes.io/os: linux
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
