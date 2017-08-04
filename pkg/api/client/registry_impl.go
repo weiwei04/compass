@@ -19,7 +19,11 @@ type helmRegistry struct {
 	client *v1.Client
 }
 
-func (r *helmRegistry) Connect() error { return nil }
+func (r *helmRegistry) Connect() error {
+	var err error
+	r.client, err = v1.NewClient(r.addr)
+	return err
+}
 
 func (r *helmRegistry) Shutdown() {}
 
@@ -34,6 +38,21 @@ func (r *helmRegistry) ListSpaces(ctx context.Context, req *ListSpacesRequest) (
 		offset: req.offset,
 		limit:  req.Limit,
 	}, nil
+}
+
+func (r *helmRegistry) CreateSpace(ctx context.Context, req *CreateSpaceRequest) (*CreateSpaceResponse, error) {
+	createResp, err := r.client.CreateSpace(req.Space)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateSpaceResponse{
+		Space: req.Space,
+		Link:  createResp.Link,
+	}, err
+}
+
+func (r *helmRegistry) DeleteSpace(ctx context.Context, req *DeleteSpaceRequest) (*DeleteSpaceResponse, error) {
+	return nil, nil
 }
 
 // 列取myspace下的所有chart
@@ -112,4 +131,25 @@ func (r *helmRegistry) GetChartReadme(context.Context, *GetChartReadmeRequest) (
 }
 
 // 推送myspace/mychart:ver
-//PushChart(context.Context, *PushChartRequest) (*PushChartResponse, error)
+func (r *helmRegistry) PushChart(ctx context.Context, req *PushChartRequest) (*PushChartResponse, error) {
+	pushResp, err := r.client.UploadChart(req.Space, req.Data)
+	if err != nil {
+		return nil, err
+	}
+	return &PushChartResponse{
+		Space:   pushResp.Space,
+		Chart:   pushResp.Chart,
+		Version: pushResp.Version,
+		Link:    pushResp.Link,
+	}, nil
+}
+
+func (r *helmRegistry) FetchChart(ctx context.Context, req *FetchChartRequest) (*FetchChartResponse, error) {
+	data, err := r.client.DownloadVersion(req.Space, req.Chart, req.Version)
+	if err != nil {
+		return nil, err
+	}
+	return &FetchChartResponse{
+		Data: data,
+	}, nil
+}
