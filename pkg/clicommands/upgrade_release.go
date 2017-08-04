@@ -11,19 +11,14 @@ import (
 	hapi "k8s.io/helm/pkg/proto/hapi/chart"
 )
 
-var InstallReleaseCommand = cli.Command{
-	Name:  "install",
+var UpgradeReleaseCommand = cli.Command{
+	Name:  "upgrade",
 	Usage: "",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "name",
 			Value: "",
-			Usage: "-name RELEASENAME",
-		},
-		cli.StringFlag{
-			Name:  "namespace",
-			Value: "default",
-			Usage: "-namespace NAMESPACE",
+			Usage: "-name RELEASE_NAME",
 		},
 		cli.StringFlag{
 			Name:  "values",
@@ -33,7 +28,7 @@ var InstallReleaseCommand = cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		if ctx.NArg() != 1 {
-			return fmt.Errorf("%s: %q requires space/chart:ver as arguments",
+			return fmt.Errorf("%s: %q requires chart pkg as arguments",
 				os.Args[0], ctx.Command.Name)
 		}
 		chart := ctx.Args().First()
@@ -42,9 +37,6 @@ var InstallReleaseCommand = cli.Command{
 			return fmt.Errorf("%s: %q must provide release name with --name",
 				os.Args[0], ctx.Command.Name)
 		}
-
-		namespace := ctx.String("namespace")
-
 		var values *hapi.Config
 		valuesFileName := ctx.String("values")
 		if valuesFileName != "" {
@@ -62,13 +54,12 @@ var InstallReleaseCommand = cli.Command{
 		}
 		defer client.Shutdown()
 
-		req := &capi.CreateReleaseRequest{
-			Chart:     chart,
-			Name:      releaseName,
-			Namespace: namespace,
-			Values:    values,
+		req := &capi.UpgradeReleaseRequest{
+			Name:   releaseName,
+			Chart:  chart,
+			Values: values,
 		}
-		resp, err := client.CreateRelease(context.Background(), req)
+		resp, err := client.UpgradeRelease(context.Background(), req)
 		if err != nil {
 			return err
 		}

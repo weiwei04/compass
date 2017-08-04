@@ -1,8 +1,9 @@
 package client
 
 import (
-	"golang.org/x/net/context"
 	"time"
+
+	"golang.org/x/net/context"
 
 	"google.golang.org/grpc"
 
@@ -12,6 +13,7 @@ import (
 
 // all the ugly things
 
+// NewCompassClient will return a default client impl
 func NewCompassClient(addr string) CompassClient {
 	return &compassClient{addr: addr}
 }
@@ -93,12 +95,12 @@ func (c *compassClient) ListReleases(ctx context.Context, req *ListReleasesReque
 }
 
 func (c *compassClient) UpdateRelease(ctx context.Context, req *UpdateReleaseRequest) (*UpdateReleaseResponse, error) {
-	resp, err := c.tapi.UpdateRelease(ctx, (*tillerapi.UpdateReleaseRequest)(req))
+	resp, err := c.capi.UpdateCompassRelease(ctx, (*compassapi.UpdateCompassReleaseRequest)(req))
 	return (*UpdateReleaseResponse)(resp), err
 }
 
 func (c *compassClient) UpgradeRelease(ctx context.Context, req *UpgradeReleaseRequest) (*UpgradeReleaseResponse, error) {
-	resp, err := c.tapi.UpdateRelease(ctx, (*tillerapi.UpdateReleaseRequest)(req))
+	resp, err := c.capi.UpgradeCompassRelease(ctx, (*compassapi.UpgradeCompassReleaseRequest)(req))
 	return (*UpgradeReleaseResponse)(resp), err
 }
 

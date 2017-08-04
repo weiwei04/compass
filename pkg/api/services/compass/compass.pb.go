@@ -10,6 +10,10 @@ It is generated from these files:
 It has these top-level messages:
 	CreateCompassReleaseRequest
 	CreateCompassReleaseResponse
+	UpdateCompassReleaseRequest
+	UpdateCompassReleaseResponse
+	UpgradeCompassReleaseRequest
+	UpgradeCompassReleaseResponse
 */
 package compass
 
@@ -107,9 +111,109 @@ func (m *CreateCompassReleaseResponse) GetRelease() *hapi_release5.Release {
 	return nil
 }
 
+type UpdateCompassReleaseRequest struct {
+	Name    string             `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Version int32              `protobuf:"varint,2,opt,name=version" json:"version,omitempty"`
+	Values  *hapi_chart.Config `protobuf:"bytes,3,opt,name=values" json:"values,omitempty"`
+}
+
+func (m *UpdateCompassReleaseRequest) Reset()                    { *m = UpdateCompassReleaseRequest{} }
+func (m *UpdateCompassReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*UpdateCompassReleaseRequest) ProtoMessage()               {}
+func (*UpdateCompassReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+
+func (m *UpdateCompassReleaseRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *UpdateCompassReleaseRequest) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+func (m *UpdateCompassReleaseRequest) GetValues() *hapi_chart.Config {
+	if m != nil {
+		return m.Values
+	}
+	return nil
+}
+
+type UpdateCompassReleaseResponse struct {
+	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
+}
+
+func (m *UpdateCompassReleaseResponse) Reset()                    { *m = UpdateCompassReleaseResponse{} }
+func (m *UpdateCompassReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*UpdateCompassReleaseResponse) ProtoMessage()               {}
+func (*UpdateCompassReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *UpdateCompassReleaseResponse) GetRelease() *hapi_release5.Release {
+	if m != nil {
+		return m.Release
+	}
+	return nil
+}
+
+type UpgradeCompassReleaseRequest struct {
+	Chart  string             `protobuf:"bytes,1,opt,name=chart" json:"chart,omitempty"`
+	Name   string             `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+	Values *hapi_chart.Config `protobuf:"bytes,3,opt,name=values" json:"values,omitempty"`
+}
+
+func (m *UpgradeCompassReleaseRequest) Reset()                    { *m = UpgradeCompassReleaseRequest{} }
+func (m *UpgradeCompassReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*UpgradeCompassReleaseRequest) ProtoMessage()               {}
+func (*UpgradeCompassReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *UpgradeCompassReleaseRequest) GetChart() string {
+	if m != nil {
+		return m.Chart
+	}
+	return ""
+}
+
+func (m *UpgradeCompassReleaseRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *UpgradeCompassReleaseRequest) GetValues() *hapi_chart.Config {
+	if m != nil {
+		return m.Values
+	}
+	return nil
+}
+
+type UpgradeCompassReleaseResponse struct {
+	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
+}
+
+func (m *UpgradeCompassReleaseResponse) Reset()                    { *m = UpgradeCompassReleaseResponse{} }
+func (m *UpgradeCompassReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*UpgradeCompassReleaseResponse) ProtoMessage()               {}
+func (*UpgradeCompassReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+func (m *UpgradeCompassReleaseResponse) GetRelease() *hapi_release5.Release {
+	if m != nil {
+		return m.Release
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*CreateCompassReleaseRequest)(nil), "compass.CreateCompassReleaseRequest")
 	proto.RegisterType((*CreateCompassReleaseResponse)(nil), "compass.CreateCompassReleaseResponse")
+	proto.RegisterType((*UpdateCompassReleaseRequest)(nil), "compass.UpdateCompassReleaseRequest")
+	proto.RegisterType((*UpdateCompassReleaseResponse)(nil), "compass.UpdateCompassReleaseResponse")
+	proto.RegisterType((*UpgradeCompassReleaseRequest)(nil), "compass.UpgradeCompassReleaseRequest")
+	proto.RegisterType((*UpgradeCompassReleaseResponse)(nil), "compass.UpgradeCompassReleaseResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -124,6 +228,8 @@ const _ = grpc.SupportPackageIsVersion4
 
 type CompassServiceClient interface {
 	CreateCompassRelease(ctx context.Context, in *CreateCompassReleaseRequest, opts ...grpc.CallOption) (*CreateCompassReleaseResponse, error)
+	UpdateCompassRelease(ctx context.Context, in *UpdateCompassReleaseRequest, opts ...grpc.CallOption) (*UpdateCompassReleaseResponse, error)
+	UpgradeCompassRelease(ctx context.Context, in *UpgradeCompassReleaseRequest, opts ...grpc.CallOption) (*UpgradeCompassReleaseResponse, error)
 }
 
 type compassServiceClient struct {
@@ -143,10 +249,30 @@ func (c *compassServiceClient) CreateCompassRelease(ctx context.Context, in *Cre
 	return out, nil
 }
 
+func (c *compassServiceClient) UpdateCompassRelease(ctx context.Context, in *UpdateCompassReleaseRequest, opts ...grpc.CallOption) (*UpdateCompassReleaseResponse, error) {
+	out := new(UpdateCompassReleaseResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/UpdateCompassRelease", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *compassServiceClient) UpgradeCompassRelease(ctx context.Context, in *UpgradeCompassReleaseRequest, opts ...grpc.CallOption) (*UpgradeCompassReleaseResponse, error) {
+	out := new(UpgradeCompassReleaseResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/UpgradeCompassRelease", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for CompassService service
 
 type CompassServiceServer interface {
 	CreateCompassRelease(context.Context, *CreateCompassReleaseRequest) (*CreateCompassReleaseResponse, error)
+	UpdateCompassRelease(context.Context, *UpdateCompassReleaseRequest) (*UpdateCompassReleaseResponse, error)
+	UpgradeCompassRelease(context.Context, *UpgradeCompassReleaseRequest) (*UpgradeCompassReleaseResponse, error)
 }
 
 func RegisterCompassServiceServer(s *grpc.Server, srv CompassServiceServer) {
@@ -171,6 +297,42 @@ func _CompassService_CreateCompassRelease_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompassService_UpdateCompassRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCompassReleaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).UpdateCompassRelease(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/UpdateCompassRelease",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).UpdateCompassRelease(ctx, req.(*UpdateCompassReleaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_UpgradeCompassRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpgradeCompassReleaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).UpgradeCompassRelease(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/UpgradeCompassRelease",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).UpgradeCompassRelease(ctx, req.(*UpgradeCompassReleaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _CompassService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "compass.CompassService",
 	HandlerType: (*CompassServiceServer)(nil),
@@ -178,6 +340,14 @@ var _CompassService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCompassRelease",
 			Handler:    _CompassService_CreateCompassRelease_Handler,
+		},
+		{
+			MethodName: "UpdateCompassRelease",
+			Handler:    _CompassService_UpdateCompassRelease_Handler,
+		},
+		{
+			MethodName: "UpgradeCompassRelease",
+			Handler:    _CompassService_UpgradeCompassRelease_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -187,23 +357,29 @@ var _CompassService_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("compass.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 276 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x51, 0xcd, 0x4a, 0xc3, 0x40,
-	0x10, 0x66, 0x6d, 0x9b, 0x98, 0x29, 0x7a, 0x18, 0x2a, 0x2e, 0xb1, 0x87, 0x50, 0x14, 0x82, 0x87,
-	0x04, 0xe2, 0x1b, 0x98, 0x07, 0x10, 0xd6, 0x9b, 0xb7, 0x75, 0x19, 0x6d, 0xa0, 0xc9, 0xc6, 0xec,
-	0xa6, 0x3e, 0x9e, 0xaf, 0x26, 0xd9, 0xcd, 0xe2, 0xa5, 0xd8, 0xd3, 0xfc, 0x7d, 0xf3, 0xf7, 0x7d,
-	0x70, 0xa5, 0x74, 0xdb, 0x4b, 0x63, 0x8a, 0x7e, 0xd0, 0x56, 0x63, 0x3c, 0x87, 0x69, 0xba, 0x97,
-	0x7d, 0x53, 0x0e, 0x74, 0x20, 0x69, 0x28, 0x58, 0x0f, 0x4a, 0x6f, 0x5d, 0x4d, 0xed, 0xe5, 0x60,
-	0x4b, 0xa5, 0xbb, 0x8f, 0xe6, 0xd3, 0x17, 0x76, 0x3f, 0x0c, 0xee, 0xea, 0x81, 0xa4, 0xa5, 0xda,
-	0x8f, 0x11, 0xbe, 0x4f, 0xd0, 0xd7, 0x48, 0xc6, 0xe2, 0x06, 0x56, 0xae, 0x8b, 0xb3, 0x8c, 0xe5,
-	0x89, 0xf0, 0x01, 0x22, 0x2c, 0x3b, 0xd9, 0x12, 0xbf, 0x70, 0x49, 0xe7, 0xe3, 0x16, 0x92, 0xc9,
-	0x9a, 0x5e, 0x2a, 0xe2, 0x0b, 0x57, 0xf8, 0x4b, 0xe0, 0x23, 0x44, 0x47, 0x79, 0x18, 0xc9, 0xf0,
-	0x65, 0xc6, 0xf2, 0x75, 0x85, 0xc5, 0x74, 0x51, 0xe1, 0xc6, 0x15, 0xb5, 0xbb, 0x48, 0xcc, 0x08,
-	0xe4, 0x10, 0xdb, 0xa6, 0x25, 0x3d, 0x5a, 0xbe, 0xca, 0x58, 0xbe, 0x10, 0x21, 0x9c, 0xf6, 0x7e,
-	0xcb, 0xc6, 0xf2, 0x28, 0x63, 0xf9, 0xa5, 0x70, 0xfe, 0xee, 0x05, 0xb6, 0xa7, 0x1f, 0x30, 0xbd,
-	0xee, 0x0c, 0x61, 0x09, 0xf1, 0xcc, 0x85, 0xfb, 0x61, 0x5d, 0xdd, 0xf8, 0xd5, 0x81, 0xa0, 0x80,
-	0x0f, 0xa8, 0x6a, 0x84, 0xeb, 0x79, 0xd4, 0x2b, 0x0d, 0xc7, 0x46, 0x11, 0x2a, 0xd8, 0x9c, 0x5a,
-	0x81, 0xf7, 0x45, 0x90, 0xe2, 0x1f, 0x0a, 0xd3, 0x87, 0x33, 0x28, 0x7f, 0xe7, 0x73, 0xf2, 0x16,
-	0x94, 0x7c, 0x8f, 0x9c, 0x36, 0x4f, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x1a, 0x6e, 0x73, 0x7b,
-	0xea, 0x01, 0x00, 0x00,
+	// 371 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x54, 0x5f, 0x4f, 0xc2, 0x30,
+	0x10, 0xcf, 0xf8, 0x37, 0x39, 0xa2, 0x0f, 0x0d, 0xc4, 0x66, 0x60, 0xb2, 0x10, 0x35, 0x8b, 0x0f,
+	0x23, 0xc1, 0x6f, 0x20, 0x1f, 0x40, 0x33, 0xe3, 0x8b, 0x6f, 0xb5, 0x1c, 0xb0, 0x04, 0xd6, 0xd9,
+	0x16, 0xf8, 0x78, 0x26, 0x7e, 0x32, 0xb3, 0x76, 0x8d, 0x7b, 0x18, 0x10, 0xf1, 0xa9, 0xbd, 0xde,
+	0xef, 0xee, 0x77, 0xbf, 0xbb, 0xb6, 0x70, 0xc9, 0xc5, 0x26, 0x67, 0x4a, 0xc5, 0xb9, 0x14, 0x5a,
+	0x10, 0xbf, 0x34, 0x83, 0x60, 0xc5, 0xf2, 0x74, 0x22, 0x71, 0x8d, 0x4c, 0xa1, 0x5b, 0x2d, 0x28,
+	0xb8, 0x36, 0x3e, 0xbe, 0x62, 0x52, 0x4f, 0xb8, 0xc8, 0x16, 0xe9, 0xd2, 0x3a, 0xc6, 0x5f, 0x1e,
+	0x0c, 0x67, 0x12, 0x99, 0xc6, 0x99, 0x4d, 0x93, 0xd8, 0xb8, 0x04, 0x3f, 0xb7, 0xa8, 0x34, 0xe9,
+	0x43, 0xdb, 0x44, 0x51, 0x2f, 0xf4, 0xa2, 0x6e, 0x62, 0x0d, 0x42, 0xa0, 0x95, 0xb1, 0x0d, 0xd2,
+	0x86, 0x39, 0x34, 0x7b, 0x32, 0x82, 0x6e, 0xb1, 0xaa, 0x9c, 0x71, 0xa4, 0x4d, 0xe3, 0xf8, 0x3d,
+	0x20, 0x0f, 0xd0, 0xd9, 0xb1, 0xf5, 0x16, 0x15, 0x6d, 0x85, 0x5e, 0xd4, 0x9b, 0x92, 0xb8, 0xa8,
+	0x28, 0x36, 0xe9, 0xe2, 0x99, 0xa9, 0x28, 0x29, 0x11, 0x84, 0x82, 0xaf, 0xd3, 0x0d, 0x8a, 0xad,
+	0xa6, 0xed, 0xd0, 0x8b, 0x9a, 0x89, 0x33, 0x0b, 0xde, 0x3d, 0x4b, 0x35, 0xed, 0x84, 0x5e, 0x74,
+	0x91, 0x98, 0xfd, 0xf8, 0x19, 0x46, 0xf5, 0x02, 0x54, 0x2e, 0x32, 0x85, 0x64, 0x02, 0x7e, 0xd9,
+	0x0b, 0xa3, 0xa1, 0x37, 0x1d, 0x58, 0x6a, 0xd7, 0x20, 0x87, 0x77, 0xa8, 0xf1, 0x1e, 0x86, 0x6f,
+	0xf9, 0xfc, 0x60, 0x47, 0x9c, 0x76, 0xaf, 0xa2, 0x9d, 0x82, 0xbf, 0x43, 0xa9, 0x52, 0x91, 0x99,
+	0x96, 0xb4, 0x13, 0x67, 0x56, 0x74, 0x37, 0x4f, 0xe9, 0x2e, 0x94, 0xd4, 0x13, 0x9f, 0xab, 0x44,
+	0x17, 0x09, 0x97, 0x92, 0xcd, 0xff, 0x3d, 0xdc, 0xbf, 0xc8, 0x78, 0x81, 0x9b, 0x03, 0xac, 0x67,
+	0xea, 0x98, 0x7e, 0x37, 0xe0, 0xaa, 0xcc, 0xf5, 0x8a, 0x72, 0x97, 0x72, 0x24, 0x1c, 0xfa, 0x75,
+	0x53, 0x27, 0xb7, 0xb1, 0x7b, 0x1d, 0x47, 0x6e, 0x75, 0x70, 0x77, 0x02, 0x55, 0x16, 0xca, 0xa1,
+	0x5f, 0x37, 0x90, 0x0a, 0xc9, 0x91, 0x8b, 0x52, 0x21, 0x39, 0x3a, 0xd5, 0x05, 0x0c, 0x6a, 0xdb,
+	0x45, 0xaa, 0xf1, 0x87, 0x87, 0x18, 0xdc, 0x9f, 0x82, 0x59, 0x9e, 0xa7, 0xee, 0xbb, 0xfb, 0x29,
+	0x3e, 0x3a, 0xe6, 0xed, 0x3f, 0xfe, 0x04, 0x00, 0x00, 0xff, 0xff, 0xc1, 0x3a, 0xe2, 0x4e, 0x4a,
+	0x04, 0x00, 0x00,
 }
