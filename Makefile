@@ -1,5 +1,6 @@
 bootstrap:
 	glide install
+	glide update --strip-vendor
 
 build:
 	cd cmd/compass && go build

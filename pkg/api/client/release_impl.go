@@ -14,7 +14,7 @@ import (
 // all the ugly things
 
 // NewCompassClient will return a default client impl
-func NewCompassClient(addr string) CompassClient {
+func NewCompassReleaseClient(addr string) Release {
 	return &compassClient{addr: addr}
 }
 
@@ -34,14 +34,10 @@ func (c *compassClient) Connect() error {
 	var err error
 
 	defer func() {
-		if err != nil {
-			if c.cconn != nil {
-				c.cconn.Close()
-			}
-			if c.tconn != nil {
-				c.tconn.Close()
-			}
+		if err == nil {
+			return
 		}
+		c.Shutdown()
 	}()
 
 	opts := []grpc.DialOption{
