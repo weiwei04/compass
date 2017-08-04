@@ -25,7 +25,7 @@ var (
 	grpcAddr      = flag.String("listen", ":8910", "address:port to listen on")
 	enableTracing = flag.Bool("trace", false, "enable rpc tracing")
 	tillerAddr    = flag.String("tiller", "127.0.0.1:44134", "tiller address, default: 127.0.0.1:44134")
-	registryAddr  = flag.String("registry", "http://127.0.0.1:8900", "registry address, default: http://127.0.0.1:8900")
+	registryAddr  = flag.String("registry", "http://helm-registry:8900", "registry address, default: http://helm-registry:8900")
 )
 
 func main() {

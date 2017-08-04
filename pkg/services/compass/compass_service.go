@@ -41,3 +41,52 @@ func (s *CompassServer) CreateCompassRelease(ctx context.Context, req *api.Creat
 	}
 	return &resp, err
 }
+
+func (s *CompassServer) UpdateCompassRelease(ctx context.Context, req *api.UpdateCompassReleaseRequest) (*api.UpdateCompassReleaseResponse, error) {
+	getReq := &tiller.GetReleaseContentRequest{
+		Name: req.Name,
+		//Version: req.Version,
+	}
+	getResp, err := s.tiller.GetReleaseContent(ctx, getReq)
+	if err != nil {
+		return nil, err
+	}
+	chart := getResp.Release.Chart
+	updateReq := &tiller.UpdateReleaseRequest{
+		Name:   req.Name,
+		Chart:  chart,
+		Values: req.Values,
+	}
+
+	var resp api.UpdateCompassReleaseResponse
+	updateResp, err := s.tiller.UpdateRelease(newContext(), updateReq)
+	if updateResp != nil {
+		resp.Release = updateResp.Release
+	}
+
+	return &resp, err
+}
+
+func (s *CompassServer) UpgradeCompassRelease(ctx context.Context, req *api.UpgradeCompassReleaseRequest) (*api.UpgradeCompassReleaseResponse, error) {
+	chart, err := s.registry.Get(req.GetChart())
+	if err != nil {
+		s.logger.Debug("get chart failed",
+			zap.String("chart", req.GetChart()),
+			zap.Error(err))
+		return nil, err
+	}
+
+	upgradeReq := &tiller.UpdateReleaseRequest{
+		Name:   req.Name,
+		Chart:  chart,
+		Values: req.Values,
+	}
+
+	// TODO: wrap ctx with newContext
+	var resp api.UpgradeCompassReleaseResponse
+	upgradeResp, err := s.tiller.UpdateRelease(newContext(), upgradeReq)
+	if upgradeResp != nil {
+		resp.Release = upgradeResp.Release
+	}
+	return &resp, err
+}

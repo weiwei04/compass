@@ -10,6 +10,12 @@ import (
 type CreateReleaseRequest compassapi.CreateCompassReleaseRequest
 type CreateReleaseResponse compassapi.CreateCompassReleaseResponse
 
+type UpdateReleaseRequest compassapi.UpdateCompassReleaseRequest
+type UpdateReleaseResponse compassapi.UpdateCompassReleaseResponse
+
+type UpgradeReleaseRequest compassapi.UpgradeCompassReleaseRequest
+type UpgradeReleaseResponse compassapi.UpgradeCompassReleaseResponse
+
 type ListReleasesRequest tillerapi.ListReleasesRequest
 type ListReleasesClient tillerapi.ReleaseService_ListReleasesClient
 
@@ -19,12 +25,6 @@ type GetReleaseStatusResponse tillerapi.GetReleaseStatusResponse
 type GetReleaseContentRequest tillerapi.GetReleaseContentRequest
 type GetReleaseContentResponse tillerapi.GetReleaseContentResponse
 
-type UpdateReleaseRequest tillerapi.UpdateReleaseRequest
-type UpdateReleaseResponse tillerapi.UpdateReleaseResponse
-
-type UpgradeReleaseRequest tillerapi.UpdateReleaseRequest
-type UpgradeReleaseResponse tillerapi.UpdateReleaseResponse
-
 type DeleteReleaseRequest tillerapi.UninstallReleaseRequest
 type DeleteReleaseResponse tillerapi.UninstallReleaseResponse
 
@@ -33,15 +33,3 @@ type RollbackReleaseResponse tillerapi.RollbackReleaseResponse
 
 type GetHistoryRequest tillerapi.GetHistoryRequest
 type GetHistoryResponse tillerapi.GetHistoryResponse
-
-//type CompassClient interface {
-//	CreateRelease()
-//	ListReleases()
-//	UpdateRelease()
-//	UpgradeRelease()
-//	DeleteRelease()
-//	GetReleaseHistory()
-//	RollbackRelease()
-//	GetReleaseStatus()
-//	GetReleaseContent()
-//}

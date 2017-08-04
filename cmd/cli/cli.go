@@ -1,9 +1,10 @@
 package main
 
 import (
+	"os"
+
 	"github.com/urfave/cli"
 	"github.com/weiwei04/compass/pkg/clicommands"
-	"os"
 )
 
 const (
@@ -20,7 +21,9 @@ func main() {
 	app.Name = "compass"
 	app.Usage = usage
 	app.Commands = []cli.Command{
-		clicommands.ReleaseCommand,
+		clicommands.InstallReleaseCommand,
+		clicommands.UpdateReleaseCommand,
+		clicommands.UpgradeReleaseCommand,
 	}
 	app.Run(os.Args)
 }
