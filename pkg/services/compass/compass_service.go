@@ -47,7 +47,7 @@ func (s *CompassServer) UpdateCompassRelease(ctx context.Context, req *api.Updat
 		Name: req.Name,
 		//Version: req.Version,
 	}
-	getResp, err := s.tiller.GetReleaseContent(ctx, getReq)
+	getResp, err := s.tiller.GetReleaseContent(newContext(), getReq)
 	if err != nil {
 		return nil, err
 	}
