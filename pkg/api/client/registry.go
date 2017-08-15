@@ -3,6 +3,7 @@ package client
 import (
 	"golang.org/x/net/context"
 
+	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/proto/hapi/chart"
 )
 
@@ -105,10 +106,11 @@ type GetChartMetadataResponse struct {
 	Dependencies []*chart.Metadata
 }
 
-//type GetChartRequirementsRequest GetChartMetadataRequest
-//
-//type GetChartRequirementsResponse struct {
-//}
+type GetChartRequirementsRequest GetChartMetadataRequest
+
+type GetChartRequirementsResponse struct {
+	Dependencies []*chartutil.Dependency
+}
 
 type GetChartValuesRequest GetChartMetadataRequest
 
@@ -156,7 +158,7 @@ type Registry interface {
 	// 获取myspace/mychart:ver的values
 	GetChartValues(context.Context, *GetChartValuesRequest) (*GetChartValuesResponse, error)
 	// 获取mysapce/mychart:ver的依赖说明
-	//GetChartRequiremens(context.Context, *GetChartRequirementsRequest) (*GetChartRequirementsResponse, error)
+	GetChartRequirements(context.Context, *GetChartRequirementsRequest) (*GetChartRequirementsResponse, error)
 	// 获取myspace/mychart:ver的README.md
 	GetChartReadme(context.Context, *GetChartReadmeRequest) (*GetChartReadmeResponse, error)
 	// 推送myspace/mychart:ver

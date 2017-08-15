@@ -89,7 +89,7 @@ var ChartCommand = cli.Command{
 		listChartCommand,
 		pushChartCommand,
 		inspectChartCommand,
-		getChartFileCommand,
+		showChartFileCommand,
 		fetchChartCommand,
 	},
 }
@@ -225,25 +225,57 @@ var inspectChartCommand = cli.Command{
 	},
 }
 
-var getChartFileCommand = cli.Command{
-	Name: "values",
-	Usage: `values space/chart:ver
+func showChartValues(client api.Registry, space, chart, version string) ([]byte, error) {
+	resp, err := client.GetChartValues(nil, &api.GetChartValuesRequest{
+		Space:   space,
+		Chart:   chart,
+		Version: version,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return yaml.Marshal(resp.Values)
+}
+
+func showChartReadme(client api.Registry, space, chart, version string) ([]byte, error) {
+	resp, err := client.GetChartReadme(nil, &api.GetChartReadmeRequest{
+		Space:   space,
+		Chart:   chart,
+		Version: version,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp.Readme, err
+}
+
+func showChartDeps(client api.Registry, space, chart, version string) ([]byte, error) {
+	resp, err := client.GetChartRequirements(nil, &api.GetChartRequirementsRequest{
+		Space:   space,
+		Chart:   chart,
+		Version: version,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return yaml.Marshal(resp.Dependencies)
+}
+
+var showChartFileCommand = cli.Command{
+	Name: "show",
+	Usage: `show space/chart:ver
 	  for example:
 	    values myspace/mychart:0.0.1 (this will get myspace/mychart:0.0.1 values.yaml content)`,
 	Flags: []cli.Flag{
 		cli.StringFlag{
-			Name:  "output, o",
-			Value: "yaml",
-			Usage: `-o yaml|json`,
+			Name:  "file, f",
+			Value: "readme",
+			Usage: `-f readme|values|deps`,
 		},
 	},
 	Action: func(ctx *cli.Context) error {
 		if err := checkArgs(ctx, 1, exactArgs); err != nil {
 			return err
-		}
-		format := ctx.String("output")
-		if format != "yaml" && format != "json" {
-			return fmt.Errorf("unsupported output format %s", ctx.String("output"))
 		}
 		arg := ctx.Args().First()
 		space, name, ver, err := splitSpaceChartVer(arg)
@@ -254,24 +286,21 @@ var getChartFileCommand = cli.Command{
 		if err != nil {
 			return err
 		}
-		resp, err := c.GetChartValues(nil, &api.GetChartValuesRequest{
-			Space:   space,
-			Chart:   name,
-			Version: ver,
-		})
+		var data []byte
+		switch ctx.String("file") {
+		case "readme":
+			data, err = showChartReadme(c, space, name, ver)
+		case "values":
+			data, err = showChartValues(c, space, name, ver)
+		case "deps":
+			data, err = showChartDeps(c, space, name, ver)
+		default:
+			err = fmt.Errorf("unsupported file %s", ctx.String("file"))
+		}
 		if err != nil {
 			return err
 		}
-
-		var data []byte
-		switch ctx.String("output") {
-		case "yaml":
-			data, _ = yaml.Marshal(resp.Values)
-		case "json":
-			data, _ = json.MarshalIndent(resp.Values, "", "  ")
-		}
-
-		fmt.Println(arg, " values")
+		fmt.Println(arg, " ", ctx.String("file"))
 		fmt.Println()
 		fmt.Println(string(data))
 		fmt.Println("-----------------------------------------")
