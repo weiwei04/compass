@@ -7,8 +7,8 @@ import (
 )
 
 type ListSpacesRequest struct {
-	offset int
-	Limit  int
+	Start int
+	Limit int
 }
 
 type ListSpacesResponse struct {
@@ -31,20 +31,20 @@ type DeleteSpaceRequest CreateSpaceRequest
 
 type DeleteSpaceResponse struct{}
 
-func (resp *ListSpacesResponse) NewRequest() *ListSpacesRequest {
-	if resp.IsEnd {
-		return nil
-	}
-	return &ListSpacesRequest{
-		offset: resp.offset + resp.limit,
-		Limit:  resp.limit,
-	}
-}
+//func (resp *ListSpacesResponse) NewRequest() *ListSpacesRequest {
+//	if resp.IsEnd {
+//		return nil
+//	}
+//	return &ListSpacesRequest{
+//		Start: resp.offset + resp.limit,
+//		Limit: resp.limit,
+//	}
+//}
 
 type ListChartsRequest struct {
-	Space  string
-	offset int
-	Limit  int
+	Space string
+	Start int
+	Limit int
 }
 
 type ListChartsResponse struct {
@@ -55,16 +55,16 @@ type ListChartsResponse struct {
 	IsEnd  bool
 }
 
-func (resp *ListChartsResponse) NewRequest() *ListChartsRequest {
-	if resp.IsEnd {
-		return nil
-	}
-	return &ListChartsRequest{
-		Space:  resp.space,
-		offset: resp.offset + resp.limit,
-		Limit:  resp.limit,
-	}
-}
+//func (resp *ListChartsResponse) NewRequest() *ListChartsRequest {
+//	if resp.IsEnd {
+//		return nil
+//	}
+//	return &ListChartsRequest{
+//		Space: resp.space,
+//		Start: resp.offset + resp.limit,
+//		Limit: resp.limit,
+//	}
+//}
 
 type ListChartVersionsRequest struct {
 	Space  string
@@ -82,17 +82,17 @@ type ListChartVersionsResponse struct {
 	offset   int
 }
 
-func (resp *ListChartVersionsResponse) NewRequest() *ListChartVersionsRequest {
-	if resp.IsEnd {
-		return nil
-	}
-	return &ListChartVersionsRequest{
-		Space:  resp.space,
-		Chart:  resp.chart,
-		Limit:  resp.limit,
-		offset: resp.offset + resp.limit,
-	}
-}
+//func (resp *ListChartVersionsResponse) NewRequest() *ListChartVersionsRequest {
+//	if resp.IsEnd {
+//		return nil
+//	}
+//	return &ListChartVersionsRequest{
+//		Space:  resp.space,
+//		Chart:  resp.chart,
+//		Limit:  resp.limit,
+//		offset: resp.offset + resp.limit,
+//	}
+//}
 
 type GetChartMetadataRequest struct {
 	Space   string
