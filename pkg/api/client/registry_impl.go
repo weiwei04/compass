@@ -1,13 +1,19 @@
 package client
 
 import (
-	"fmt"
+	"bytes"
 
+	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/proto/hapi/chart"
 
 	v1 "github.com/caicloud/helm-registry/pkg/rest/v1"
 	"golang.org/x/net/context"
 	yaml "gopkg.in/yaml.v2"
+)
+
+const (
+	readmeFile       = "README.md"
+	requirementsFile = "requirements.yaml"
 )
 
 func NewHelmRegistryClient(addr string) Registry {
@@ -52,7 +58,11 @@ func (r *helmRegistry) CreateSpace(ctx context.Context, req *CreateSpaceRequest)
 }
 
 func (r *helmRegistry) DeleteSpace(ctx context.Context, req *DeleteSpaceRequest) (*DeleteSpaceResponse, error) {
-	return nil, nil
+	err := r.client.DeleteSpace(req.Space)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteSpaceResponse{}, nil
 }
 
 // 列取myspace下的所有chart
@@ -123,11 +133,47 @@ func (r *helmRegistry) GetChartValues(ctx context.Context, req *GetChartValuesRe
 	}, nil
 }
 
-// 获取mysapce/mychart:ver的依赖说明
-//GetChartRequiremens(context.Context, *GetChartRequirementsRequest) (*GetChartRequirementsResponse, error)
+func (r *helmRegistry) fetchChartFile(ctx context.Context, space, chart, ver, file string) ([]byte, error) {
+	data, err := r.client.DownloadVersion(space, chart, ver)
+	if err != nil {
+		return nil, err
+	}
+	ch, err := chartutil.LoadArchive(bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range ch.Files {
+		if f.TypeUrl == file {
+			return f.Value, nil
+		}
+	}
+	return []byte{}, nil
+}
+
 // 获取myspace/mychart:ver的README.md
-func (r *helmRegistry) GetChartReadme(context.Context, *GetChartReadmeRequest) (*GetChartReadmeResponse, error) {
-	return nil, fmt.Errorf("unimplemented")
+func (r *helmRegistry) GetChartReadme(ctx context.Context, req *GetChartReadmeRequest) (*GetChartReadmeResponse, error) {
+	data, err := r.fetchChartFile(ctx, req.Space, req.Chart, req.Version, readmeFile)
+	if err != nil {
+		return nil, err
+	}
+	return &GetChartReadmeResponse{data}, nil
+}
+
+func (r *helmRegistry) GetChartRequirements(ctx context.Context, req *GetChartRequirementsRequest) (*GetChartRequirementsResponse, error) {
+	data, err := r.fetchChartFile(ctx, req.Space, req.Chart, req.Version, requirementsFile)
+	if err != nil {
+		return nil, err
+	}
+	var deps []*chartutil.Dependency
+	if len(data) > 0 {
+		r := &chartutil.Requirements{}
+		err := yaml.Unmarshal(data, r)
+		if err != nil {
+			return nil, err
+		}
+		deps = r.Dependencies
+	}
+	return &GetChartRequirementsResponse{deps}, nil
 }
 
 // 推送myspace/mychart:ver
