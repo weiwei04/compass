@@ -8,17 +8,16 @@ import (
 )
 
 const (
-	usage = `
-Compass(github.com/weiwei04/compass) is a front end for tiller, it implements all tiller grpc api and integrate with Helm-Registry(github.com/caicloud/helm-registry)
-
-Avaiable Commands:
-  compass install [CHART] [OPTIONS]
-  `
+	usage = `a cli tool for Compass,
+	 Compass(github.com/weiwei04/compass) is a front end for tiller,
+	 it implements all tiller grpc api and integrate with Helm-Registry(github.com/caicloud/helm-registry)
+`
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "compass"
+	app.Name = "fusion"
+	app.Version = "0.0.1"
 	app.Usage = usage
 	app.Commands = []cli.Command{
 		clicommands.SpaceCommand,

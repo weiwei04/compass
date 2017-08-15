@@ -1,0 +1,6 @@
+name: "fusion"
+version: "0.0.1"
+usage: "fusion --help"
+description: "mange chart stored on helm-registry, and install release into k8s\nexport HELM_REGISTRY_ADDR=http:// to set your helm-registry address\n"
+useTunnel: true
+command: "$HELM_PLUGIN_DIR/fusion-tunnel.sh"
