@@ -28,14 +28,14 @@ func (r *helmRegistry) Connect() error {
 func (r *helmRegistry) Shutdown() {}
 
 func (r *helmRegistry) ListSpaces(ctx context.Context, req *ListSpacesRequest) (*ListSpacesResponse, error) {
-	listResp, err := r.client.ListSpaces(req.offset, req.Limit)
+	listResp, err := r.client.ListSpaces(req.Start, req.Limit)
 	if err != nil {
 		return nil, err
 	}
 	return &ListSpacesResponse{
 		Spaces: listResp.Items,
-		IsEnd:  req.offset+len(listResp.Items) >= listResp.Metadata.Total,
-		offset: req.offset,
+		IsEnd:  req.Start+len(listResp.Items) >= listResp.Metadata.Total,
+		offset: req.Start,
 		limit:  req.Limit,
 	}, nil
 }
@@ -57,16 +57,16 @@ func (r *helmRegistry) DeleteSpace(ctx context.Context, req *DeleteSpaceRequest)
 
 // 列取myspace下的所有chart
 func (r *helmRegistry) ListCharts(ctx context.Context, req *ListChartsRequest) (*ListChartsResponse, error) {
-	listResp, err := r.client.ListCharts(req.Space, req.offset, req.Limit)
+	listResp, err := r.client.ListCharts(req.Space, req.Start, req.Limit)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ListChartsResponse{
 		Charts: listResp.Items,
-		IsEnd:  req.offset+len(listResp.Items) >= listResp.Metadata.Total,
+		IsEnd:  req.Start+len(listResp.Items) >= listResp.Metadata.Total,
 		space:  req.Space,
-		offset: req.offset,
+		offset: req.Start,
 		limit:  req.Limit,
 	}, nil
 }
