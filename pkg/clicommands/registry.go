@@ -225,7 +225,7 @@ var inspectChartCommand = cli.Command{
 	},
 }
 
-func showChartValues(client api.Registry, space, chart, version string) ([]byte, error) {
+func showChartValues(client api.Registry, space, chart, version, format string) ([]byte, error) {
 	resp, err := client.GetChartValues(nil, &api.GetChartValuesRequest{
 		Space:   space,
 		Chart:   chart,
@@ -233,6 +233,9 @@ func showChartValues(client api.Registry, space, chart, version string) ([]byte,
 	})
 	if err != nil {
 		return nil, err
+	}
+	if format == "json" {
+		return json.MarshalIndent(resp.Values, "", " ")
 	}
 	return yaml.Marshal(resp.Values)
 }
@@ -249,7 +252,7 @@ func showChartReadme(client api.Registry, space, chart, version string) ([]byte,
 	return resp.Readme, err
 }
 
-func showChartDeps(client api.Registry, space, chart, version string) ([]byte, error) {
+func showChartDeps(client api.Registry, space, chart, version, format string) ([]byte, error) {
 	resp, err := client.GetChartRequirements(nil, &api.GetChartRequirementsRequest{
 		Space:   space,
 		Chart:   chart,
@@ -257,6 +260,9 @@ func showChartDeps(client api.Registry, space, chart, version string) ([]byte, e
 	})
 	if err != nil {
 		return nil, err
+	}
+	if format == "json" {
+		return json.MarshalIndent(resp.Dependencies, "", " ")
 	}
 	return yaml.Marshal(resp.Dependencies)
 }
@@ -271,6 +277,11 @@ var showChartFileCommand = cli.Command{
 			Name:  "file, f",
 			Value: "readme",
 			Usage: `-f readme|values|deps`,
+		},
+		cli.StringFlag{
+			Name:  "output, o",
+			Value: "yaml",
+			Usage: `-o yaml|json`,
 		},
 	},
 	Action: func(ctx *cli.Context) error {
@@ -291,9 +302,9 @@ var showChartFileCommand = cli.Command{
 		case "readme":
 			data, err = showChartReadme(c, space, name, ver)
 		case "values":
-			data, err = showChartValues(c, space, name, ver)
+			data, err = showChartValues(c, space, name, ver, ctx.String("output"))
 		case "deps":
-			data, err = showChartDeps(c, space, name, ver)
+			data, err = showChartDeps(c, space, name, ver, ctx.String("output"))
 		default:
 			err = fmt.Errorf("unsupported file %s", ctx.String("file"))
 		}

@@ -10,3 +10,6 @@ TL,RD
 
 
 #### Install Fusion Plugin
+
+make bootstrap
+make install-fusion

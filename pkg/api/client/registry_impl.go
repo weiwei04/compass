@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"encoding/json"
 
 	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/proto/hapi/chart"
@@ -123,14 +124,12 @@ func (r *helmRegistry) GetChartValues(ctx context.Context, req *GetChartValuesRe
 		return nil, err
 	}
 	values := map[string]interface{}{}
-	err = yaml.Unmarshal(raw, &values)
+	err = json.Unmarshal(raw, &values)
 	if err != nil {
 		return nil, err
 	}
 
-	return &GetChartValuesResponse{
-		Values: values,
-	}, nil
+	return &GetChartValuesResponse{values}, nil
 }
 
 func (r *helmRegistry) fetchChartFile(ctx context.Context, space, chart, ver, file string) ([]byte, error) {
