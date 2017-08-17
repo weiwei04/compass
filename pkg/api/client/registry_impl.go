@@ -84,17 +84,17 @@ func (r *helmRegistry) ListCharts(ctx context.Context, req *ListChartsRequest) (
 
 // 列取mysapce/mychart的所有版本
 func (r *helmRegistry) ListChartVersions(ctx context.Context, req *ListChartVersionsRequest) (*ListChartVersionsResponse, error) {
-	listResp, err := r.client.ListVersions(req.Space, req.Chart, req.offset, req.Limit)
+	listResp, err := r.client.ListVersions(req.Space, req.Chart, req.Start, req.Limit)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ListChartVersionsResponse{
 		Versions: listResp.Items,
-		IsEnd:    req.offset+len(listResp.Items) >= listResp.Metadata.Total,
+		IsEnd:    req.Start+len(listResp.Items) >= listResp.Metadata.Total,
 		space:    req.Space,
 		chart:    req.Chart,
-		offset:   req.offset,
+		offset:   req.Start,
 		limit:    req.Limit,
 	}, nil
 }

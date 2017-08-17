@@ -68,10 +68,10 @@ type ListChartsResponse struct {
 //}
 
 type ListChartVersionsRequest struct {
-	Space  string
-	Chart  string
-	Limit  int
-	offset int
+	Space string
+	Chart string
+	Limit int
+	Start int
 }
 
 type ListChartVersionsResponse struct {
