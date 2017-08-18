@@ -4,6 +4,10 @@ package compass;
 
 import "hapi/release/release.proto";
 import "hapi/chart/config.proto";
+import "google/api/annotations.proto";
+//import "google/protobuf/empty.proto";
+//import "google/protobuf/duration.proto";
+//import "google/protobuf/timestamp.proto";
 
 option go_package = "compass";
 
@@ -24,6 +28,7 @@ message UpdateCompassReleaseRequest {
   string name = 1;
   int32 version = 2;
   hapi.chart.Config values = 3;
+  string namespace = 4; // only for auth, not used in compass
 }
 
 message UpdateCompassReleaseResponse {
@@ -34,6 +39,7 @@ message UpgradeCompassReleaseRequest {
   string chart = 1;
   string name = 2;
   hapi.chart.Config values = 3;
+  string namespace = 4; // only for auth, not used in compass
 }
 
 message UpgradeCompassReleaseResponse {
@@ -41,7 +47,24 @@ message UpgradeCompassReleaseResponse {
 }
 
 service CompassService {
-  rpc CreateCompassRelease(CreateCompassReleaseRequest) returns (CreateCompassReleaseResponse);
-  rpc UpdateCompassRelease(UpdateCompassReleaseRequest) returns (UpdateCompassReleaseResponse);
-  rpc UpgradeCompassRelease(UpgradeCompassReleaseRequest) returns (UpgradeCompassReleaseResponse);
+  rpc CreateCompassRelease(CreateCompassReleaseRequest) returns (CreateCompassReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1/namespaces/{namespace}/releases/{name}"
+      body: "*"
+    };
+  }
+
+  rpc UpdateCompassRelease(UpdateCompassReleaseRequest) returns (UpdateCompassReleaseResponse) {
+    option (google.api.http) = {
+      put: "/v1/namespaces/{namespace}/releases/{name}/values"
+      body: "*"
+    };
+  }
+
+  rpc UpgradeCompassRelease(UpgradeCompassReleaseRequest) returns (UpgradeCompassReleaseResponse) {
+    option (google.api.http) = {
+      put: "/v1/namespaces/{namespace}/releases/{name}/chart"
+      body: "*"
+    };
+  }
 }
