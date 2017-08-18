@@ -3,6 +3,8 @@ package compass
 import (
 	"time"
 
+	context "golang.org/x/net/context"
+
 	"go.uber.org/zap"
 
 	"google.golang.org/grpc"
@@ -12,10 +14,9 @@ import (
 	tillerapi "k8s.io/helm/pkg/proto/hapi/services"
 )
 
-type Config struct {
-	TillerAddr   string
-	RegistryAddr string
-}
+var _ compassapi.CompassServiceServer = &CompassServer{}
+
+var _ tillerapi.ReleaseServiceServer = &CompassServer{}
 
 type CompassServer struct {
 	config   Config
@@ -25,45 +26,50 @@ type CompassServer struct {
 	tiller   tillerapi.ReleaseServiceClient
 }
 
-func NewCompassServer(config Config) *CompassServer {
-	return &CompassServer{
+func NewCompassServer(ctx context.Context, config Config) *CompassServer {
+	s := &CompassServer{
 		config: config,
 	}
-}
 
-var _ compassapi.CompassServiceServer = &CompassServer{}
-
-var _ tillerapi.ReleaseServiceServer = &CompassServer{}
-
-func (s *CompassServer) Start() error {
 	var err error
+
+	// init logger
 	if s.logger, err = zap.NewProduction(); err != nil {
-		return err
+		return nil
 	}
-	s.registry, err = chart.NewHelmRegistryStore(s.config.RegistryAddr)
-	if err != nil {
+
+	// init conn to helm-registry
+	if s.registry, err = chart.NewHelmRegistryStore(s.config.RegistryAddr); err != nil {
 		s.logger.Error("NewHelmRegistryStore failed",
 			zap.Error(err))
-		return err
+		return nil
 	}
 
+	// init conn to tiller service
 	opts := []grpc.DialOption{
 		grpc.WithTimeout(5 * time.Second),
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
 	}
-	s.conn, err = grpc.Dial(s.config.TillerAddr, opts...)
-	if err != nil {
+	if s.conn, err = grpc.Dial(s.config.TillerAddr, opts...); err != nil {
 		s.logger.Error("dial tiller failed",
 			zap.String("tillerAddr", s.config.TillerAddr),
 			zap.Error(err))
-		return err
+		return nil
 	}
+	go func() {
+		<-ctx.Done()
+		if cerr := s.conn.Close(); cerr != nil {
+			s.logger.Error("Failed to close conn to",
+				zap.String("tiller", s.config.TillerAddr),
+				zap.Error(cerr))
+		} else {
+			s.logger.Info("Closed conn to",
+				zap.String("tiller", s.config.TillerAddr))
+		}
+		s.logger.Sync()
+	}()
 	s.tiller = tillerapi.NewReleaseServiceClient(s.conn)
-	return nil
-}
 
-func (s *CompassServer) Shutdown() {
-	s.conn.Close()
-	s.logger.Sync()
+	return s
 }
