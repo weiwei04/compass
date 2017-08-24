@@ -1,0 +1,1136 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "compass.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/namespaces/{namespace}/releases": {
+      "get": {
+        "summary": "call the api like this\nget /v1/namespaces/NAMESPACE/releases?limit=10\u0026offset=denis",
+        "operationId": "ListReleases",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassListReleasesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "description": "Limit is the maximum number of releases to be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "description": "Offset is the last release name that was seen. The next listing\noperation will start with the name after this one.\nExample: If list one returns albert, bernie, carl, and sets 'next: dennis'.\ndennis is the offset. Supplying 'dennis' for the next request should\ncause the next batch to return a set of results starting with 'dennis'.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}": {
+      "delete": {
+        "operationId": "DeleteRelease",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassDeleteReleaseResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      },
+      "post": {
+        "operationId": "CreateRelease",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassCreateReleaseResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/compassCreateReleaseRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}/chart": {
+      "put": {
+        "operationId": "UpgradeRelease",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassUpgradeReleaseResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/compassUpgradeReleaseRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}/content": {
+      "get": {
+        "operationId": "GetReleaseContent",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassGetReleaseContentResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "description": "Version is the version of the release.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}/history": {
+      "get": {
+        "operationId": "GetReleaseHistory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassGetReleaseHistoryResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "max",
+            "description": "The maximum number of releases to include.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}/status": {
+      "get": {
+        "operationId": "GetReleaseStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassGetReleaseStatusResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "description": "Version is the version of the release.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}/tests": {
+      "post": {
+        "operationId": "RunReleaseTest",
+        "responses": {
+          "200": {
+            "description": "(streaming responses)",
+            "schema": {
+              "$ref": "#/definitions/compassTestReleaseResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}/values": {
+      "put": {
+        "operationId": "UpdateRelease",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassUpdateReleaseResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/compassUpdateReleaseRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    },
+    "/v1/namespaces/{namespace}/releases/{name}/version/{version}": {
+      "post": {
+        "operationId": "RollbackRelease",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/compassRollbackReleaseResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CompassService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "HookEvent": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "PRE_INSTALL",
+        "POST_INSTALL",
+        "PRE_DELETE",
+        "POST_DELETE",
+        "PRE_UPGRADE",
+        "POST_UPGRADE",
+        "PRE_ROLLBACK",
+        "POST_ROLLBACK",
+        "RELEASE_TEST_SUCCESS",
+        "RELEASE_TEST_FAILURE"
+      ],
+      "default": "UNKNOWN"
+    },
+    "StatusCode": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "DEPLOYED",
+        "DELETED",
+        "SUPERSEDED",
+        "FAILED",
+        "DELETING",
+        "PENDING_INSTALL",
+        "PENDING_UPGRADE",
+        "PENDING_ROLLBACK"
+      ],
+      "default": "UNKNOWN",
+      "description": " - UNKNOWN: Status_UNKNOWN indicates that a release is in an uncertain state.\n - DEPLOYED: Status_DEPLOYED indicates that the release has been pushed to Kubernetes.\n - DELETED: Status_DELETED indicates that a release has been deleted from Kubermetes.\n - SUPERSEDED: Status_SUPERSEDED indicates that this release object is outdated and a newer one exists.\n - FAILED: Status_FAILED indicates that the release was not successfully deployed.\n - DELETING: Status_DELETING indicates that a delete operation is underway.\n - PENDING_INSTALL: Status_PENDING_INSTALL indicates that an install operation is underway.\n - PENDING_UPGRADE: Status_PENDING_UPGRADE indicates that an upgrade operation is underway.\n - PENDING_ROLLBACK: Status_PENDING_ROLLBACK indicates that an rollback operation is underway."
+    },
+    "chartChart": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/chartMetadata",
+          "description": "Contents of the Chartfile."
+        },
+        "templates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/chartTemplate"
+          },
+          "description": "Templates for this chart."
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/chartChart"
+          },
+          "description": "Charts that this chart depends on."
+        },
+        "values": {
+          "$ref": "#/definitions/chartConfig",
+          "description": "Default config for this template."
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          },
+          "description": "Miscellaneous files in a chart archive,\ne.g. README, LICENSE, etc."
+        }
+      },
+      "description": "Chart is a helm package that contains metadata, a default config, zero or more\n\toptionally parameterizable templates, and zero or more charts (dependencies)."
+    },
+    "chartConfig": {
+      "type": "object",
+      "properties": {
+        "raw": {
+          "type": "string"
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/chartValue"
+          }
+        }
+      },
+      "description": "Config supplies values to the parametrizable templates of a chart."
+    },
+    "chartMaintainer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name is a user name or organization name"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email is an optional email address to contact the named maintainer"
+        }
+      },
+      "description": "Maintainer describes a Chart maintainer."
+    },
+    "chartMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "The name of the chart"
+        },
+        "home": {
+          "type": "string",
+          "title": "The URL to a relevant project page, git repo, or contact person"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Source is the URL to the source code of this chart"
+        },
+        "version": {
+          "type": "string",
+          "title": "A SemVer 2 conformant version string of the chart"
+        },
+        "description": {
+          "type": "string",
+          "title": "A one-sentence description of the chart"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "A list of string keywords"
+        },
+        "maintainers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/chartMaintainer"
+          },
+          "title": "A list of name and URL/email address combinations for the maintainer(s)"
+        },
+        "engine": {
+          "type": "string",
+          "description": "The name of the template engine to use. Defaults to 'gotpl'."
+        },
+        "icon": {
+          "type": "string",
+          "description": "The URL to an icon file."
+        },
+        "apiVersion": {
+          "type": "string",
+          "description": "The API Version of this chart."
+        },
+        "condition": {
+          "type": "string",
+          "title": "The condition to check to enable chart"
+        },
+        "tags": {
+          "type": "string",
+          "title": "The tags to check to enable chart"
+        },
+        "appVersion": {
+          "type": "string",
+          "description": "The version of the application enclosed inside of this chart."
+        },
+        "deprecated": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "Whether or not this chart is deprecated"
+        },
+        "tillerVersion": {
+          "type": "string",
+          "title": "TillerVersion is a SemVer constraints on what version of Tiller is required.\nSee SemVer ranges here: https://github.com/Masterminds/semver#basic-comparisons"
+        }
+      },
+      "description": "Metadata for a Chart file. This models the structure of a Chart.yaml file.\n\n\tSpec: https://k8s.io/helm/blob/master/docs/design/chart_format.md#the-chart-file"
+    },
+    "chartTemplate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name is the path-like name of the template."
+        },
+        "data": {
+          "type": "string",
+          "format": "byte",
+          "description": "Data is the template as byte data."
+        }
+      },
+      "description": "Template represents a template as a name/value pair.\n\nBy convention, name is a relative path within the scope of the chart's\nbase directory."
+    },
+    "chartValue": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "description": "Value describes a configuration value as a string."
+    },
+    "compassCreateReleaseRequest": {
+      "type": "object",
+      "properties": {
+        "chart": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "values": {
+          "$ref": "#/definitions/chartConfig"
+        },
+        "timeout": {
+          "type": "string",
+          "format": "int64"
+        },
+        "wait": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "compassCreateReleaseResponse": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/definitions/releaseRelease"
+        }
+      }
+    },
+    "compassDeleteReleaseRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "disable_hooks": {
+          "type": "boolean",
+          "format": "boolean",
+          "description": "DisableHooks causes the server to skip running any hooks for the uninstall."
+        },
+        "purge": {
+          "type": "boolean",
+          "format": "boolean",
+          "description": "Purge removes the release from the store and make its name free for later use."
+        },
+        "timeout": {
+          "type": "string",
+          "format": "int64",
+          "description": "timeout specifies the max amount of time any kubernetes client command can run."
+        },
+        "namespace": {
+          "type": "string"
+        }
+      },
+      "description": "UninstallReleaseRequest represents a request to uninstall a named release."
+    },
+    "compassDeleteReleaseResponse": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/definitions/releaseRelease",
+          "description": "Release is the release that was marked deleted."
+        },
+        "info": {
+          "type": "string",
+          "title": "Info is an uninstall message"
+        }
+      },
+      "description": "UninstallReleaseResponse represents a successful response to an uninstall request."
+    },
+    "compassGetReleaseContentRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "The name of the release"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Version is the version of the release"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "just for auth"
+        }
+      },
+      "description": "GetReleaseContentRequest is a request to get the contents of a release."
+    },
+    "compassGetReleaseContentResponse": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/definitions/releaseRelease",
+          "title": "The release content"
+        }
+      },
+      "description": "GetReleaseContentResponse is a response containing the contents of a release."
+    },
+    "compassGetReleaseHistoryRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the release."
+        },
+        "max": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The maximum number of releases to include."
+        },
+        "namespace": {
+          "type": "string"
+        }
+      },
+      "description": "GetHistoryRequest requests a release's history."
+    },
+    "compassGetReleaseHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "releases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/releaseRelease"
+          }
+        }
+      },
+      "description": "GetHistoryResponse is received in response to a GetHistory rpc."
+    },
+    "compassGetReleaseStatusRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name is the name of the release"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Version is the version of the release"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "just for auth"
+        }
+      },
+      "description": "GetReleaseStatusRequest is a request to get the status of a release."
+    },
+    "compassGetReleaseStatusResponse": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name is the name of the release."
+        },
+        "info": {
+          "$ref": "#/definitions/releaseInfo",
+          "description": "Info contains information about the release."
+        },
+        "namespace": {
+          "type": "string",
+          "title": "Namesapce the release was released into"
+        }
+      },
+      "description": "GetReleaseStatusResponse is the response indicating the status of the named release."
+    },
+    "compassListReleasesRequest": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "string",
+          "format": "int64",
+          "description": "Limit is the maximum number of releases to be returned."
+        },
+        "offset": {
+          "type": "string",
+          "description": "Offset is the last release name that was seen. The next listing\noperation will start with the name after this one.\nExample: If list one returns albert, bernie, carl, and sets 'next: dennis'.\ndennis is the offset. Supplying 'dennis' for the next request should\ncause the next batch to return a set of results starting with 'dennis'."
+        },
+        "namespace": {
+          "type": "string",
+          "description": "repeated hapi.release.Status.Code status_codes = 6;\nNamespace is the filter to select releases only from a specific namespace."
+        }
+      },
+      "description": "ListReleasesRequest requests a list of releases.\n\nReleases can be retrieved in chunks by setting limit and offset.\n\nReleases can be sorted according to a few pre-determined sort stategies."
+    },
+    "compassListReleasesResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "int64",
+          "description": "Count is the expected total number of releases to be returned."
+        },
+        "next": {
+          "type": "string",
+          "description": "Next is the name of the next release. If this is other than an empty\nstring, it means there are more results."
+        },
+        "total": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total is the total number of queryable releases."
+        },
+        "releases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/releaseRelease"
+          },
+          "description": "Releases is the list of found release objects."
+        }
+      },
+      "description": "ListReleasesResponse is a list of releases."
+    },
+    "compassRollbackReleaseRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "The name of the release"
+        },
+        "dry_run": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "dry_run, if true, will run through the release logic but no create"
+        },
+        "disable_hooks": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "DisableHooks causes the server to skip running any hooks for the rollback"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Version is the version of the release to deploy."
+        },
+        "recreate": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "Performs pods restart for resources if applicable"
+        },
+        "timeout": {
+          "type": "string",
+          "format": "int64",
+          "description": "timeout specifies the max amount of time any kubernetes client command can run."
+        },
+        "wait": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "wait, if true, will wait until all Pods, PVCs, and Services are in a ready state\nbefore marking the release as successful. It will wait for as long as timeout"
+        },
+        "force": {
+          "type": "boolean",
+          "format": "boolean",
+          "description": "Force resource update through delete/recreate if needed."
+        },
+        "namespace": {
+          "type": "string"
+        }
+      }
+    },
+    "compassRollbackReleaseResponse": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/definitions/releaseRelease"
+        }
+      },
+      "description": "RollbackReleaseResponse is the response to an update request."
+    },
+    "compassTestReleaseRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name is the name of the release"
+        },
+        "timeout": {
+          "type": "string",
+          "format": "int64",
+          "description": "timeout specifies the max amount of time any kubernetes client command can run."
+        },
+        "cleanup": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "cleanup specifies whether or not to attempt pod deletion after test completes"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      },
+      "description": "TestReleaseRequest is a request to get the status of a release."
+    },
+    "compassTestReleaseResponse": {
+      "type": "object",
+      "properties": {
+        "msg": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/releaseTestRunStatus"
+        }
+      },
+      "title": "TestReleaseResponse represents a message from executing a test"
+    },
+    "compassUpdateReleaseRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "values": {
+          "$ref": "#/definitions/chartConfig"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      }
+    },
+    "compassUpdateReleaseResponse": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/definitions/releaseRelease"
+        }
+      }
+    },
+    "compassUpgradeReleaseRequest": {
+      "type": "object",
+      "properties": {
+        "chart": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "values": {
+          "$ref": "#/definitions/chartConfig"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      }
+    },
+    "compassUpgradeReleaseResponse": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/definitions/releaseRelease"
+        }
+      }
+    },
+    "hapireleaseStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/definitions/StatusCode"
+        },
+        "resources": {
+          "type": "string",
+          "description": "Cluster resources as kubectl would print them."
+        },
+        "notes": {
+          "type": "string",
+          "title": "Contains the rendered templates/NOTES.txt if available"
+        },
+        "last_test_suite_run": {
+          "$ref": "#/definitions/releaseTestSuite",
+          "title": "LastTestSuiteRun provides results on the last test run on a release"
+        }
+      },
+      "description": "Status defines the status of a release."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string",
+          "description": "A URL/resource name whose content describes the type of the\nserialized protocol buffer message.\n\nFor URLs which use the scheme `http`, `https`, or no scheme, the\nfollowing restrictions and interpretations apply:\n\n* If no scheme is provided, `https` is assumed.\n* The last segment of the URL's path must represent the fully\n  qualified name of the type (as in `path/google.protobuf.Duration`).\n  The name should be in a canonical form (e.g., leading \".\" is\n  not accepted).\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        },
+        "value": {
+          "type": "string",
+          "format": "byte",
+          "description": "Must be a valid serialized protocol buffer of the above specified type."
+        }
+      },
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "releaseHook": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "description": "Kind is the Kubernetes kind."
+        },
+        "path": {
+          "type": "string",
+          "description": "Path is the chart-relative path to the template."
+        },
+        "manifest": {
+          "type": "string",
+          "description": "Manifest is the manifest contents."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HookEvent"
+          },
+          "description": "Events are the events that this hook fires on."
+        },
+        "last_run": {
+          "type": "string",
+          "format": "date-time",
+          "description": "LastRun indicates the date/time this was last run."
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Weight indicates the sort order for execution among similar Hook type"
+        }
+      },
+      "description": "Hook defines a hook object."
+    },
+    "releaseInfo": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/hapireleaseStatus"
+        },
+        "first_deployed": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_deployed": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Deleted tracks when this object was deleted."
+        },
+        "Description": {
+          "type": "string",
+          "description": "Description is human-friendly \"log entry\" about this release."
+        }
+      },
+      "description": "Info describes release information."
+    },
+    "releaseRelease": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name is the name of the release"
+        },
+        "info": {
+          "$ref": "#/definitions/releaseInfo",
+          "title": "Info provides information about a release"
+        },
+        "chart": {
+          "$ref": "#/definitions/chartChart",
+          "description": "Chart is the chart that was released."
+        },
+        "config": {
+          "$ref": "#/definitions/chartConfig",
+          "description": "Config is the set of extra Values added to the chart.\nThese values override the default values inside of the chart."
+        },
+        "manifest": {
+          "type": "string",
+          "description": "Manifest is the string representation of the rendered template."
+        },
+        "hooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/releaseHook"
+          },
+          "description": "Hooks are all of the hooks declared for this release."
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Version is an int32 which represents the version of the release."
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Namespace is the kubernetes namespace of the release."
+        }
+      },
+      "description": "Release describes a deployment of a chart, together with the chart\nand the variables used to deploy that chart."
+    },
+    "releaseTestRun": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/releaseTestRunStatus"
+        },
+        "info": {
+          "type": "string"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "releaseTestRunStatus": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "SUCCESS",
+        "FAILURE",
+        "RUNNING"
+      ],
+      "default": "UNKNOWN"
+    },
+    "releaseTestSuite": {
+      "type": "object",
+      "properties": {
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "StartedAt indicates the date/time this test suite was kicked off"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "CompletedAt indicates the date/time this test suite was completed"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/releaseTestRun"
+          },
+          "title": "Results are the results of each segment of the test"
+        }
+      },
+      "title": "TestSuite comprises of the last run of the pre-defined test suite of a release version"
+    }
+  }
+}

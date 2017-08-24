@@ -9,12 +9,27 @@ It is generated from these files:
 	compass.proto
 
 It has these top-level messages:
-	CreateCompassReleaseRequest
-	CreateCompassReleaseResponse
-	UpdateCompassReleaseRequest
-	UpdateCompassReleaseResponse
-	UpgradeCompassReleaseRequest
-	UpgradeCompassReleaseResponse
+	CreateReleaseRequest
+	CreateReleaseResponse
+	UpdateReleaseRequest
+	UpdateReleaseResponse
+	UpgradeReleaseRequest
+	UpgradeReleaseResponse
+	ListReleasesRequest
+	ListSort
+	ListReleasesResponse
+	GetReleaseStatusRequest
+	GetReleaseStatusResponse
+	GetReleaseContentRequest
+	GetReleaseContentResponse
+	RollbackReleaseRequest
+	RollbackReleaseResponse
+	DeleteReleaseRequest
+	DeleteReleaseResponse
+	GetReleaseHistoryRequest
+	GetReleaseHistoryResponse
+	TestReleaseRequest
+	TestReleaseResponse
 */
 package compass
 
@@ -22,6 +37,9 @@ import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import hapi_release5 "k8s.io/helm/pkg/proto/hapi/release"
+import _ "k8s.io/helm/pkg/proto/hapi/release"
+import hapi_release1 "k8s.io/helm/pkg/proto/hapi/release"
+import hapi_release4 "k8s.io/helm/pkg/proto/hapi/release"
 import hapi_chart "k8s.io/helm/pkg/proto/hapi/chart"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 
@@ -41,7 +59,54 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type CreateCompassReleaseRequest struct {
+// SortBy defines sort operations.
+type ListSort_SortBy int32
+
+const (
+	ListSort_UNKNOWN       ListSort_SortBy = 0
+	ListSort_NAME          ListSort_SortBy = 1
+	ListSort_LAST_RELEASED ListSort_SortBy = 2
+)
+
+var ListSort_SortBy_name = map[int32]string{
+	0: "UNKNOWN",
+	1: "NAME",
+	2: "LAST_RELEASED",
+}
+var ListSort_SortBy_value = map[string]int32{
+	"UNKNOWN":       0,
+	"NAME":          1,
+	"LAST_RELEASED": 2,
+}
+
+func (x ListSort_SortBy) String() string {
+	return proto.EnumName(ListSort_SortBy_name, int32(x))
+}
+func (ListSort_SortBy) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{7, 0} }
+
+// SortOrder defines sort orders to augment sorting operations.
+type ListSort_SortOrder int32
+
+const (
+	ListSort_ASC  ListSort_SortOrder = 0
+	ListSort_DESC ListSort_SortOrder = 1
+)
+
+var ListSort_SortOrder_name = map[int32]string{
+	0: "ASC",
+	1: "DESC",
+}
+var ListSort_SortOrder_value = map[string]int32{
+	"ASC":  0,
+	"DESC": 1,
+}
+
+func (x ListSort_SortOrder) String() string {
+	return proto.EnumName(ListSort_SortOrder_name, int32(x))
+}
+func (ListSort_SortOrder) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{7, 1} }
+
+type CreateReleaseRequest struct {
 	Chart     string             `protobuf:"bytes,1,opt,name=chart" json:"chart,omitempty"`
 	Name      string             `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
 	Namespace string             `protobuf:"bytes,3,opt,name=namespace" json:"namespace,omitempty"`
@@ -50,188 +115,737 @@ type CreateCompassReleaseRequest struct {
 	Wait      bool               `protobuf:"varint,6,opt,name=wait" json:"wait,omitempty"`
 }
 
-func (m *CreateCompassReleaseRequest) Reset()                    { *m = CreateCompassReleaseRequest{} }
-func (m *CreateCompassReleaseRequest) String() string            { return proto.CompactTextString(m) }
-func (*CreateCompassReleaseRequest) ProtoMessage()               {}
-func (*CreateCompassReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (m *CreateReleaseRequest) Reset()                    { *m = CreateReleaseRequest{} }
+func (m *CreateReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*CreateReleaseRequest) ProtoMessage()               {}
+func (*CreateReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *CreateCompassReleaseRequest) GetChart() string {
+func (m *CreateReleaseRequest) GetChart() string {
 	if m != nil {
 		return m.Chart
 	}
 	return ""
 }
 
-func (m *CreateCompassReleaseRequest) GetName() string {
+func (m *CreateReleaseRequest) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *CreateCompassReleaseRequest) GetNamespace() string {
+func (m *CreateReleaseRequest) GetNamespace() string {
 	if m != nil {
 		return m.Namespace
 	}
 	return ""
 }
 
-func (m *CreateCompassReleaseRequest) GetValues() *hapi_chart.Config {
+func (m *CreateReleaseRequest) GetValues() *hapi_chart.Config {
 	if m != nil {
 		return m.Values
 	}
 	return nil
 }
 
-func (m *CreateCompassReleaseRequest) GetTimeout() int64 {
+func (m *CreateReleaseRequest) GetTimeout() int64 {
 	if m != nil {
 		return m.Timeout
 	}
 	return 0
 }
 
-func (m *CreateCompassReleaseRequest) GetWait() bool {
+func (m *CreateReleaseRequest) GetWait() bool {
 	if m != nil {
 		return m.Wait
 	}
 	return false
 }
 
-type CreateCompassReleaseResponse struct {
+type CreateReleaseResponse struct {
 	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
 }
 
-func (m *CreateCompassReleaseResponse) Reset()                    { *m = CreateCompassReleaseResponse{} }
-func (m *CreateCompassReleaseResponse) String() string            { return proto.CompactTextString(m) }
-func (*CreateCompassReleaseResponse) ProtoMessage()               {}
-func (*CreateCompassReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (m *CreateReleaseResponse) Reset()                    { *m = CreateReleaseResponse{} }
+func (m *CreateReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*CreateReleaseResponse) ProtoMessage()               {}
+func (*CreateReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-func (m *CreateCompassReleaseResponse) GetRelease() *hapi_release5.Release {
+func (m *CreateReleaseResponse) GetRelease() *hapi_release5.Release {
 	if m != nil {
 		return m.Release
 	}
 	return nil
 }
 
-type UpdateCompassReleaseRequest struct {
+type UpdateReleaseRequest struct {
 	Name      string             `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 	Version   int32              `protobuf:"varint,2,opt,name=version" json:"version,omitempty"`
 	Values    *hapi_chart.Config `protobuf:"bytes,3,opt,name=values" json:"values,omitempty"`
 	Namespace string             `protobuf:"bytes,4,opt,name=namespace" json:"namespace,omitempty"`
 }
 
-func (m *UpdateCompassReleaseRequest) Reset()                    { *m = UpdateCompassReleaseRequest{} }
-func (m *UpdateCompassReleaseRequest) String() string            { return proto.CompactTextString(m) }
-func (*UpdateCompassReleaseRequest) ProtoMessage()               {}
-func (*UpdateCompassReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+func (m *UpdateReleaseRequest) Reset()                    { *m = UpdateReleaseRequest{} }
+func (m *UpdateReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*UpdateReleaseRequest) ProtoMessage()               {}
+func (*UpdateReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
-func (m *UpdateCompassReleaseRequest) GetName() string {
+func (m *UpdateReleaseRequest) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *UpdateCompassReleaseRequest) GetVersion() int32 {
+func (m *UpdateReleaseRequest) GetVersion() int32 {
 	if m != nil {
 		return m.Version
 	}
 	return 0
 }
 
-func (m *UpdateCompassReleaseRequest) GetValues() *hapi_chart.Config {
+func (m *UpdateReleaseRequest) GetValues() *hapi_chart.Config {
 	if m != nil {
 		return m.Values
 	}
 	return nil
 }
 
-func (m *UpdateCompassReleaseRequest) GetNamespace() string {
+func (m *UpdateReleaseRequest) GetNamespace() string {
 	if m != nil {
 		return m.Namespace
 	}
 	return ""
 }
 
-type UpdateCompassReleaseResponse struct {
+type UpdateReleaseResponse struct {
 	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
 }
 
-func (m *UpdateCompassReleaseResponse) Reset()                    { *m = UpdateCompassReleaseResponse{} }
-func (m *UpdateCompassReleaseResponse) String() string            { return proto.CompactTextString(m) }
-func (*UpdateCompassReleaseResponse) ProtoMessage()               {}
-func (*UpdateCompassReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+func (m *UpdateReleaseResponse) Reset()                    { *m = UpdateReleaseResponse{} }
+func (m *UpdateReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*UpdateReleaseResponse) ProtoMessage()               {}
+func (*UpdateReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
 
-func (m *UpdateCompassReleaseResponse) GetRelease() *hapi_release5.Release {
+func (m *UpdateReleaseResponse) GetRelease() *hapi_release5.Release {
 	if m != nil {
 		return m.Release
 	}
 	return nil
 }
 
-type UpgradeCompassReleaseRequest struct {
+type UpgradeReleaseRequest struct {
 	Chart     string             `protobuf:"bytes,1,opt,name=chart" json:"chart,omitempty"`
 	Name      string             `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
 	Values    *hapi_chart.Config `protobuf:"bytes,3,opt,name=values" json:"values,omitempty"`
 	Namespace string             `protobuf:"bytes,4,opt,name=namespace" json:"namespace,omitempty"`
 }
 
-func (m *UpgradeCompassReleaseRequest) Reset()                    { *m = UpgradeCompassReleaseRequest{} }
-func (m *UpgradeCompassReleaseRequest) String() string            { return proto.CompactTextString(m) }
-func (*UpgradeCompassReleaseRequest) ProtoMessage()               {}
-func (*UpgradeCompassReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+func (m *UpgradeReleaseRequest) Reset()                    { *m = UpgradeReleaseRequest{} }
+func (m *UpgradeReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*UpgradeReleaseRequest) ProtoMessage()               {}
+func (*UpgradeReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
 
-func (m *UpgradeCompassReleaseRequest) GetChart() string {
+func (m *UpgradeReleaseRequest) GetChart() string {
 	if m != nil {
 		return m.Chart
 	}
 	return ""
 }
 
-func (m *UpgradeCompassReleaseRequest) GetName() string {
+func (m *UpgradeReleaseRequest) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *UpgradeCompassReleaseRequest) GetValues() *hapi_chart.Config {
+func (m *UpgradeReleaseRequest) GetValues() *hapi_chart.Config {
 	if m != nil {
 		return m.Values
 	}
 	return nil
 }
 
-func (m *UpgradeCompassReleaseRequest) GetNamespace() string {
+func (m *UpgradeReleaseRequest) GetNamespace() string {
 	if m != nil {
 		return m.Namespace
 	}
 	return ""
 }
 
-type UpgradeCompassReleaseResponse struct {
+type UpgradeReleaseResponse struct {
 	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
 }
 
-func (m *UpgradeCompassReleaseResponse) Reset()                    { *m = UpgradeCompassReleaseResponse{} }
-func (m *UpgradeCompassReleaseResponse) String() string            { return proto.CompactTextString(m) }
-func (*UpgradeCompassReleaseResponse) ProtoMessage()               {}
-func (*UpgradeCompassReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+func (m *UpgradeReleaseResponse) Reset()                    { *m = UpgradeReleaseResponse{} }
+func (m *UpgradeReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*UpgradeReleaseResponse) ProtoMessage()               {}
+func (*UpgradeReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
 
-func (m *UpgradeCompassReleaseResponse) GetRelease() *hapi_release5.Release {
+func (m *UpgradeReleaseResponse) GetRelease() *hapi_release5.Release {
 	if m != nil {
 		return m.Release
 	}
 	return nil
 }
 
+// ListReleasesRequest requests a list of releases.
+//
+// Releases can be retrieved in chunks by setting limit and offset.
+//
+// Releases can be sorted according to a few pre-determined sort stategies.
+type ListReleasesRequest struct {
+	// Limit is the maximum number of releases to be returned.
+	Limit int64 `protobuf:"varint,1,opt,name=limit" json:"limit,omitempty"`
+	// Offset is the last release name that was seen. The next listing
+	// operation will start with the name after this one.
+	// Example: If list one returns albert, bernie, carl, and sets 'next: dennis'.
+	// dennis is the offset. Supplying 'dennis' for the next request should
+	// cause the next batch to return a set of results starting with 'dennis'.
+	Offset string `protobuf:"bytes,2,opt,name=offset" json:"offset,omitempty"`
+	// repeated hapi.release.Status.Code status_codes = 6;
+	// Namespace is the filter to select releases only from a specific namespace.
+	Namespace string `protobuf:"bytes,3,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *ListReleasesRequest) Reset()                    { *m = ListReleasesRequest{} }
+func (m *ListReleasesRequest) String() string            { return proto.CompactTextString(m) }
+func (*ListReleasesRequest) ProtoMessage()               {}
+func (*ListReleasesRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+
+func (m *ListReleasesRequest) GetLimit() int64 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+func (m *ListReleasesRequest) GetOffset() string {
+	if m != nil {
+		return m.Offset
+	}
+	return ""
+}
+
+func (m *ListReleasesRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// ListSort defines sorting fields on a release list.
+type ListSort struct {
+}
+
+func (m *ListSort) Reset()                    { *m = ListSort{} }
+func (m *ListSort) String() string            { return proto.CompactTextString(m) }
+func (*ListSort) ProtoMessage()               {}
+func (*ListSort) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+
+// ListReleasesResponse is a list of releases.
+type ListReleasesResponse struct {
+	// Count is the expected total number of releases to be returned.
+	Count int64 `protobuf:"varint,1,opt,name=count" json:"count,string,omitempty"`
+	// Next is the name of the next release. If this is other than an empty
+	// string, it means there are more results.
+	Next string `protobuf:"bytes,2,opt,name=next" json:"next,omitempty"`
+	// Total is the total number of queryable releases.
+	Total int64 `protobuf:"varint,3,opt,name=total" json:"total,string,omitempty"`
+	// Releases is the list of found release objects.
+	Releases []*hapi_release5.Release `protobuf:"bytes,4,rep,name=releases" json:"releases,omitempty"`
+}
+
+func (m *ListReleasesResponse) Reset()                    { *m = ListReleasesResponse{} }
+func (m *ListReleasesResponse) String() string            { return proto.CompactTextString(m) }
+func (*ListReleasesResponse) ProtoMessage()               {}
+func (*ListReleasesResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+
+func (m *ListReleasesResponse) GetCount() int64 {
+	if m != nil {
+		return m.Count
+	}
+	return 0
+}
+
+func (m *ListReleasesResponse) GetNext() string {
+	if m != nil {
+		return m.Next
+	}
+	return ""
+}
+
+func (m *ListReleasesResponse) GetTotal() int64 {
+	if m != nil {
+		return m.Total
+	}
+	return 0
+}
+
+func (m *ListReleasesResponse) GetReleases() []*hapi_release5.Release {
+	if m != nil {
+		return m.Releases
+	}
+	return nil
+}
+
+// GetReleaseStatusRequest is a request to get the status of a release.
+type GetReleaseStatusRequest struct {
+	// Name is the name of the release
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// Version is the version of the release
+	Version int32 `protobuf:"varint,2,opt,name=version" json:"version,omitempty"`
+	// just for auth
+	Namespace string `protobuf:"bytes,3,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *GetReleaseStatusRequest) Reset()                    { *m = GetReleaseStatusRequest{} }
+func (m *GetReleaseStatusRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetReleaseStatusRequest) ProtoMessage()               {}
+func (*GetReleaseStatusRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+
+func (m *GetReleaseStatusRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *GetReleaseStatusRequest) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+func (m *GetReleaseStatusRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// GetReleaseStatusResponse is the response indicating the status of the named release.
+type GetReleaseStatusResponse struct {
+	// Name is the name of the release.
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// Info contains information about the release.
+	Info *hapi_release4.Info `protobuf:"bytes,2,opt,name=info" json:"info,omitempty"`
+	// Namesapce the release was released into
+	Namespace string `protobuf:"bytes,3,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *GetReleaseStatusResponse) Reset()                    { *m = GetReleaseStatusResponse{} }
+func (m *GetReleaseStatusResponse) String() string            { return proto.CompactTextString(m) }
+func (*GetReleaseStatusResponse) ProtoMessage()               {}
+func (*GetReleaseStatusResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
+
+func (m *GetReleaseStatusResponse) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *GetReleaseStatusResponse) GetInfo() *hapi_release4.Info {
+	if m != nil {
+		return m.Info
+	}
+	return nil
+}
+
+func (m *GetReleaseStatusResponse) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// GetReleaseContentRequest is a request to get the contents of a release.
+type GetReleaseContentRequest struct {
+	// The name of the release
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// Version is the version of the release
+	Version int32 `protobuf:"varint,2,opt,name=version" json:"version,omitempty"`
+	// just for auth
+	Namespace string `protobuf:"bytes,3,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *GetReleaseContentRequest) Reset()                    { *m = GetReleaseContentRequest{} }
+func (m *GetReleaseContentRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetReleaseContentRequest) ProtoMessage()               {}
+func (*GetReleaseContentRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
+
+func (m *GetReleaseContentRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *GetReleaseContentRequest) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+func (m *GetReleaseContentRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// GetReleaseContentResponse is a response containing the contents of a release.
+type GetReleaseContentResponse struct {
+	// The release content
+	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
+}
+
+func (m *GetReleaseContentResponse) Reset()                    { *m = GetReleaseContentResponse{} }
+func (m *GetReleaseContentResponse) String() string            { return proto.CompactTextString(m) }
+func (*GetReleaseContentResponse) ProtoMessage()               {}
+func (*GetReleaseContentResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
+
+func (m *GetReleaseContentResponse) GetRelease() *hapi_release5.Release {
+	if m != nil {
+		return m.Release
+	}
+	return nil
+}
+
+type RollbackReleaseRequest struct {
+	// The name of the release
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// dry_run, if true, will run through the release logic but no create
+	DryRun bool `protobuf:"varint,2,opt,name=dry_run,json=dryRun" json:"dry_run,omitempty"`
+	// DisableHooks causes the server to skip running any hooks for the rollback
+	DisableHooks bool `protobuf:"varint,3,opt,name=disable_hooks,json=disableHooks" json:"disable_hooks,omitempty"`
+	// Version is the version of the release to deploy.
+	Version int32 `protobuf:"varint,4,opt,name=version" json:"version,omitempty"`
+	// Performs pods restart for resources if applicable
+	Recreate bool `protobuf:"varint,5,opt,name=recreate" json:"recreate,omitempty"`
+	// timeout specifies the max amount of time any kubernetes client command can run.
+	Timeout int64 `protobuf:"varint,6,opt,name=timeout" json:"timeout,omitempty"`
+	// wait, if true, will wait until all Pods, PVCs, and Services are in a ready state
+	// before marking the release as successful. It will wait for as long as timeout
+	Wait bool `protobuf:"varint,7,opt,name=wait" json:"wait,omitempty"`
+	// Force resource update through delete/recreate if needed.
+	Force     bool   `protobuf:"varint,8,opt,name=force" json:"force,omitempty"`
+	Namespace string `protobuf:"bytes,9,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *RollbackReleaseRequest) Reset()                    { *m = RollbackReleaseRequest{} }
+func (m *RollbackReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*RollbackReleaseRequest) ProtoMessage()               {}
+func (*RollbackReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13} }
+
+func (m *RollbackReleaseRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *RollbackReleaseRequest) GetDryRun() bool {
+	if m != nil {
+		return m.DryRun
+	}
+	return false
+}
+
+func (m *RollbackReleaseRequest) GetDisableHooks() bool {
+	if m != nil {
+		return m.DisableHooks
+	}
+	return false
+}
+
+func (m *RollbackReleaseRequest) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+func (m *RollbackReleaseRequest) GetRecreate() bool {
+	if m != nil {
+		return m.Recreate
+	}
+	return false
+}
+
+func (m *RollbackReleaseRequest) GetTimeout() int64 {
+	if m != nil {
+		return m.Timeout
+	}
+	return 0
+}
+
+func (m *RollbackReleaseRequest) GetWait() bool {
+	if m != nil {
+		return m.Wait
+	}
+	return false
+}
+
+func (m *RollbackReleaseRequest) GetForce() bool {
+	if m != nil {
+		return m.Force
+	}
+	return false
+}
+
+func (m *RollbackReleaseRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// RollbackReleaseResponse is the response to an update request.
+type RollbackReleaseResponse struct {
+	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
+}
+
+func (m *RollbackReleaseResponse) Reset()                    { *m = RollbackReleaseResponse{} }
+func (m *RollbackReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*RollbackReleaseResponse) ProtoMessage()               {}
+func (*RollbackReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14} }
+
+func (m *RollbackReleaseResponse) GetRelease() *hapi_release5.Release {
+	if m != nil {
+		return m.Release
+	}
+	return nil
+}
+
+// UninstallReleaseRequest represents a request to uninstall a named release.
+type DeleteReleaseRequest struct {
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// DisableHooks causes the server to skip running any hooks for the uninstall.
+	DisableHooks bool `protobuf:"varint,2,opt,name=disable_hooks,json=disableHooks" json:"disable_hooks,omitempty"`
+	// Purge removes the release from the store and make its name free for later use.
+	Purge bool `protobuf:"varint,3,opt,name=purge" json:"purge,omitempty"`
+	// timeout specifies the max amount of time any kubernetes client command can run.
+	Timeout   int64  `protobuf:"varint,4,opt,name=timeout" json:"timeout,omitempty"`
+	Namespace string `protobuf:"bytes,5,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *DeleteReleaseRequest) Reset()                    { *m = DeleteReleaseRequest{} }
+func (m *DeleteReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*DeleteReleaseRequest) ProtoMessage()               {}
+func (*DeleteReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{15} }
+
+func (m *DeleteReleaseRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *DeleteReleaseRequest) GetDisableHooks() bool {
+	if m != nil {
+		return m.DisableHooks
+	}
+	return false
+}
+
+func (m *DeleteReleaseRequest) GetPurge() bool {
+	if m != nil {
+		return m.Purge
+	}
+	return false
+}
+
+func (m *DeleteReleaseRequest) GetTimeout() int64 {
+	if m != nil {
+		return m.Timeout
+	}
+	return 0
+}
+
+func (m *DeleteReleaseRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// UninstallReleaseResponse represents a successful response to an uninstall request.
+type DeleteReleaseResponse struct {
+	// Release is the release that was marked deleted.
+	Release *hapi_release5.Release `protobuf:"bytes,1,opt,name=release" json:"release,omitempty"`
+	// Info is an uninstall message
+	Info string `protobuf:"bytes,2,opt,name=info" json:"info,omitempty"`
+}
+
+func (m *DeleteReleaseResponse) Reset()                    { *m = DeleteReleaseResponse{} }
+func (m *DeleteReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*DeleteReleaseResponse) ProtoMessage()               {}
+func (*DeleteReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{16} }
+
+func (m *DeleteReleaseResponse) GetRelease() *hapi_release5.Release {
+	if m != nil {
+		return m.Release
+	}
+	return nil
+}
+
+func (m *DeleteReleaseResponse) GetInfo() string {
+	if m != nil {
+		return m.Info
+	}
+	return ""
+}
+
+// GetHistoryRequest requests a release's history.
+type GetReleaseHistoryRequest struct {
+	// The name of the release.
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// The maximum number of releases to include.
+	Max       int32  `protobuf:"varint,2,opt,name=max" json:"max,omitempty"`
+	Namespace string `protobuf:"bytes,3,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *GetReleaseHistoryRequest) Reset()                    { *m = GetReleaseHistoryRequest{} }
+func (m *GetReleaseHistoryRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetReleaseHistoryRequest) ProtoMessage()               {}
+func (*GetReleaseHistoryRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{17} }
+
+func (m *GetReleaseHistoryRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *GetReleaseHistoryRequest) GetMax() int32 {
+	if m != nil {
+		return m.Max
+	}
+	return 0
+}
+
+func (m *GetReleaseHistoryRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// GetHistoryResponse is received in response to a GetHistory rpc.
+type GetReleaseHistoryResponse struct {
+	Releases []*hapi_release5.Release `protobuf:"bytes,1,rep,name=releases" json:"releases,omitempty"`
+}
+
+func (m *GetReleaseHistoryResponse) Reset()                    { *m = GetReleaseHistoryResponse{} }
+func (m *GetReleaseHistoryResponse) String() string            { return proto.CompactTextString(m) }
+func (*GetReleaseHistoryResponse) ProtoMessage()               {}
+func (*GetReleaseHistoryResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{18} }
+
+func (m *GetReleaseHistoryResponse) GetReleases() []*hapi_release5.Release {
+	if m != nil {
+		return m.Releases
+	}
+	return nil
+}
+
+// TestReleaseRequest is a request to get the status of a release.
+type TestReleaseRequest struct {
+	// Name is the name of the release
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// timeout specifies the max amount of time any kubernetes client command can run.
+	Timeout int64 `protobuf:"varint,2,opt,name=timeout" json:"timeout,omitempty"`
+	// cleanup specifies whether or not to attempt pod deletion after test completes
+	Cleanup   bool   `protobuf:"varint,3,opt,name=cleanup" json:"cleanup,omitempty"`
+	Namespace string `protobuf:"bytes,4,opt,name=namespace" json:"namespace,omitempty"`
+}
+
+func (m *TestReleaseRequest) Reset()                    { *m = TestReleaseRequest{} }
+func (m *TestReleaseRequest) String() string            { return proto.CompactTextString(m) }
+func (*TestReleaseRequest) ProtoMessage()               {}
+func (*TestReleaseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{19} }
+
+func (m *TestReleaseRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *TestReleaseRequest) GetTimeout() int64 {
+	if m != nil {
+		return m.Timeout
+	}
+	return 0
+}
+
+func (m *TestReleaseRequest) GetCleanup() bool {
+	if m != nil {
+		return m.Cleanup
+	}
+	return false
+}
+
+func (m *TestReleaseRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+// TestReleaseResponse represents a message from executing a test
+type TestReleaseResponse struct {
+	Msg    string                       `protobuf:"bytes,1,opt,name=msg" json:"msg,omitempty"`
+	Status hapi_release1.TestRun_Status `protobuf:"varint,2,opt,name=status,enum=hapi.release.TestRun_Status" json:"status,omitempty"`
+}
+
+func (m *TestReleaseResponse) Reset()                    { *m = TestReleaseResponse{} }
+func (m *TestReleaseResponse) String() string            { return proto.CompactTextString(m) }
+func (*TestReleaseResponse) ProtoMessage()               {}
+func (*TestReleaseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{20} }
+
+func (m *TestReleaseResponse) GetMsg() string {
+	if m != nil {
+		return m.Msg
+	}
+	return ""
+}
+
+func (m *TestReleaseResponse) GetStatus() hapi_release1.TestRun_Status {
+	if m != nil {
+		return m.Status
+	}
+	return hapi_release1.TestRun_UNKNOWN
+}
+
 func init() {
-	proto.RegisterType((*CreateCompassReleaseRequest)(nil), "compass.CreateCompassReleaseRequest")
-	proto.RegisterType((*CreateCompassReleaseResponse)(nil), "compass.CreateCompassReleaseResponse")
-	proto.RegisterType((*UpdateCompassReleaseRequest)(nil), "compass.UpdateCompassReleaseRequest")
-	proto.RegisterType((*UpdateCompassReleaseResponse)(nil), "compass.UpdateCompassReleaseResponse")
-	proto.RegisterType((*UpgradeCompassReleaseRequest)(nil), "compass.UpgradeCompassReleaseRequest")
-	proto.RegisterType((*UpgradeCompassReleaseResponse)(nil), "compass.UpgradeCompassReleaseResponse")
+	proto.RegisterType((*CreateReleaseRequest)(nil), "compass.CreateReleaseRequest")
+	proto.RegisterType((*CreateReleaseResponse)(nil), "compass.CreateReleaseResponse")
+	proto.RegisterType((*UpdateReleaseRequest)(nil), "compass.UpdateReleaseRequest")
+	proto.RegisterType((*UpdateReleaseResponse)(nil), "compass.UpdateReleaseResponse")
+	proto.RegisterType((*UpgradeReleaseRequest)(nil), "compass.UpgradeReleaseRequest")
+	proto.RegisterType((*UpgradeReleaseResponse)(nil), "compass.UpgradeReleaseResponse")
+	proto.RegisterType((*ListReleasesRequest)(nil), "compass.ListReleasesRequest")
+	proto.RegisterType((*ListSort)(nil), "compass.ListSort")
+	proto.RegisterType((*ListReleasesResponse)(nil), "compass.ListReleasesResponse")
+	proto.RegisterType((*GetReleaseStatusRequest)(nil), "compass.GetReleaseStatusRequest")
+	proto.RegisterType((*GetReleaseStatusResponse)(nil), "compass.GetReleaseStatusResponse")
+	proto.RegisterType((*GetReleaseContentRequest)(nil), "compass.GetReleaseContentRequest")
+	proto.RegisterType((*GetReleaseContentResponse)(nil), "compass.GetReleaseContentResponse")
+	proto.RegisterType((*RollbackReleaseRequest)(nil), "compass.RollbackReleaseRequest")
+	proto.RegisterType((*RollbackReleaseResponse)(nil), "compass.RollbackReleaseResponse")
+	proto.RegisterType((*DeleteReleaseRequest)(nil), "compass.DeleteReleaseRequest")
+	proto.RegisterType((*DeleteReleaseResponse)(nil), "compass.DeleteReleaseResponse")
+	proto.RegisterType((*GetReleaseHistoryRequest)(nil), "compass.GetReleaseHistoryRequest")
+	proto.RegisterType((*GetReleaseHistoryResponse)(nil), "compass.GetReleaseHistoryResponse")
+	proto.RegisterType((*TestReleaseRequest)(nil), "compass.TestReleaseRequest")
+	proto.RegisterType((*TestReleaseResponse)(nil), "compass.TestReleaseResponse")
+	proto.RegisterEnum("compass.ListSort_SortBy", ListSort_SortBy_name, ListSort_SortBy_value)
+	proto.RegisterEnum("compass.ListSort_SortOrder", ListSort_SortOrder_name, ListSort_SortOrder_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -245,9 +859,18 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for CompassService service
 
 type CompassServiceClient interface {
-	CreateCompassRelease(ctx context.Context, in *CreateCompassReleaseRequest, opts ...grpc.CallOption) (*CreateCompassReleaseResponse, error)
-	UpdateCompassRelease(ctx context.Context, in *UpdateCompassReleaseRequest, opts ...grpc.CallOption) (*UpdateCompassReleaseResponse, error)
-	UpgradeCompassRelease(ctx context.Context, in *UpgradeCompassReleaseRequest, opts ...grpc.CallOption) (*UpgradeCompassReleaseResponse, error)
+	CreateRelease(ctx context.Context, in *CreateReleaseRequest, opts ...grpc.CallOption) (*CreateReleaseResponse, error)
+	DeleteRelease(ctx context.Context, in *DeleteReleaseRequest, opts ...grpc.CallOption) (*DeleteReleaseResponse, error)
+	UpdateRelease(ctx context.Context, in *UpdateReleaseRequest, opts ...grpc.CallOption) (*UpdateReleaseResponse, error)
+	UpgradeRelease(ctx context.Context, in *UpgradeReleaseRequest, opts ...grpc.CallOption) (*UpgradeReleaseResponse, error)
+	// call the api like this
+	// get /v1/namespaces/NAMESPACE/releases?limit=10&offset=denis
+	ListReleases(ctx context.Context, in *ListReleasesRequest, opts ...grpc.CallOption) (*ListReleasesResponse, error)
+	GetReleaseStatus(ctx context.Context, in *GetReleaseStatusRequest, opts ...grpc.CallOption) (*GetReleaseStatusResponse, error)
+	GetReleaseContent(ctx context.Context, in *GetReleaseContentRequest, opts ...grpc.CallOption) (*GetReleaseContentResponse, error)
+	GetReleaseHistory(ctx context.Context, in *GetReleaseHistoryRequest, opts ...grpc.CallOption) (*GetReleaseHistoryResponse, error)
+	RollbackRelease(ctx context.Context, in *RollbackReleaseRequest, opts ...grpc.CallOption) (*RollbackReleaseResponse, error)
+	RunReleaseTest(ctx context.Context, in *TestReleaseRequest, opts ...grpc.CallOption) (CompassService_RunReleaseTestClient, error)
 }
 
 type compassServiceClient struct {
@@ -258,97 +881,321 @@ func NewCompassServiceClient(cc *grpc.ClientConn) CompassServiceClient {
 	return &compassServiceClient{cc}
 }
 
-func (c *compassServiceClient) CreateCompassRelease(ctx context.Context, in *CreateCompassReleaseRequest, opts ...grpc.CallOption) (*CreateCompassReleaseResponse, error) {
-	out := new(CreateCompassReleaseResponse)
-	err := grpc.Invoke(ctx, "/compass.CompassService/CreateCompassRelease", in, out, c.cc, opts...)
+func (c *compassServiceClient) CreateRelease(ctx context.Context, in *CreateReleaseRequest, opts ...grpc.CallOption) (*CreateReleaseResponse, error) {
+	out := new(CreateReleaseResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/CreateRelease", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *compassServiceClient) UpdateCompassRelease(ctx context.Context, in *UpdateCompassReleaseRequest, opts ...grpc.CallOption) (*UpdateCompassReleaseResponse, error) {
-	out := new(UpdateCompassReleaseResponse)
-	err := grpc.Invoke(ctx, "/compass.CompassService/UpdateCompassRelease", in, out, c.cc, opts...)
+func (c *compassServiceClient) DeleteRelease(ctx context.Context, in *DeleteReleaseRequest, opts ...grpc.CallOption) (*DeleteReleaseResponse, error) {
+	out := new(DeleteReleaseResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/DeleteRelease", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *compassServiceClient) UpgradeCompassRelease(ctx context.Context, in *UpgradeCompassReleaseRequest, opts ...grpc.CallOption) (*UpgradeCompassReleaseResponse, error) {
-	out := new(UpgradeCompassReleaseResponse)
-	err := grpc.Invoke(ctx, "/compass.CompassService/UpgradeCompassRelease", in, out, c.cc, opts...)
+func (c *compassServiceClient) UpdateRelease(ctx context.Context, in *UpdateReleaseRequest, opts ...grpc.CallOption) (*UpdateReleaseResponse, error) {
+	out := new(UpdateReleaseResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/UpdateRelease", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
+}
+
+func (c *compassServiceClient) UpgradeRelease(ctx context.Context, in *UpgradeReleaseRequest, opts ...grpc.CallOption) (*UpgradeReleaseResponse, error) {
+	out := new(UpgradeReleaseResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/UpgradeRelease", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *compassServiceClient) ListReleases(ctx context.Context, in *ListReleasesRequest, opts ...grpc.CallOption) (*ListReleasesResponse, error) {
+	out := new(ListReleasesResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/ListReleases", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *compassServiceClient) GetReleaseStatus(ctx context.Context, in *GetReleaseStatusRequest, opts ...grpc.CallOption) (*GetReleaseStatusResponse, error) {
+	out := new(GetReleaseStatusResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/GetReleaseStatus", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *compassServiceClient) GetReleaseContent(ctx context.Context, in *GetReleaseContentRequest, opts ...grpc.CallOption) (*GetReleaseContentResponse, error) {
+	out := new(GetReleaseContentResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/GetReleaseContent", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *compassServiceClient) GetReleaseHistory(ctx context.Context, in *GetReleaseHistoryRequest, opts ...grpc.CallOption) (*GetReleaseHistoryResponse, error) {
+	out := new(GetReleaseHistoryResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/GetReleaseHistory", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *compassServiceClient) RollbackRelease(ctx context.Context, in *RollbackReleaseRequest, opts ...grpc.CallOption) (*RollbackReleaseResponse, error) {
+	out := new(RollbackReleaseResponse)
+	err := grpc.Invoke(ctx, "/compass.CompassService/RollbackRelease", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *compassServiceClient) RunReleaseTest(ctx context.Context, in *TestReleaseRequest, opts ...grpc.CallOption) (CompassService_RunReleaseTestClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_CompassService_serviceDesc.Streams[0], c.cc, "/compass.CompassService/RunReleaseTest", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &compassServiceRunReleaseTestClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type CompassService_RunReleaseTestClient interface {
+	Recv() (*TestReleaseResponse, error)
+	grpc.ClientStream
+}
+
+type compassServiceRunReleaseTestClient struct {
+	grpc.ClientStream
+}
+
+func (x *compassServiceRunReleaseTestClient) Recv() (*TestReleaseResponse, error) {
+	m := new(TestReleaseResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // Server API for CompassService service
 
 type CompassServiceServer interface {
-	CreateCompassRelease(context.Context, *CreateCompassReleaseRequest) (*CreateCompassReleaseResponse, error)
-	UpdateCompassRelease(context.Context, *UpdateCompassReleaseRequest) (*UpdateCompassReleaseResponse, error)
-	UpgradeCompassRelease(context.Context, *UpgradeCompassReleaseRequest) (*UpgradeCompassReleaseResponse, error)
+	CreateRelease(context.Context, *CreateReleaseRequest) (*CreateReleaseResponse, error)
+	DeleteRelease(context.Context, *DeleteReleaseRequest) (*DeleteReleaseResponse, error)
+	UpdateRelease(context.Context, *UpdateReleaseRequest) (*UpdateReleaseResponse, error)
+	UpgradeRelease(context.Context, *UpgradeReleaseRequest) (*UpgradeReleaseResponse, error)
+	// call the api like this
+	// get /v1/namespaces/NAMESPACE/releases?limit=10&offset=denis
+	ListReleases(context.Context, *ListReleasesRequest) (*ListReleasesResponse, error)
+	GetReleaseStatus(context.Context, *GetReleaseStatusRequest) (*GetReleaseStatusResponse, error)
+	GetReleaseContent(context.Context, *GetReleaseContentRequest) (*GetReleaseContentResponse, error)
+	GetReleaseHistory(context.Context, *GetReleaseHistoryRequest) (*GetReleaseHistoryResponse, error)
+	RollbackRelease(context.Context, *RollbackReleaseRequest) (*RollbackReleaseResponse, error)
+	RunReleaseTest(*TestReleaseRequest, CompassService_RunReleaseTestServer) error
 }
 
 func RegisterCompassServiceServer(s *grpc.Server, srv CompassServiceServer) {
 	s.RegisterService(&_CompassService_serviceDesc, srv)
 }
 
-func _CompassService_CreateCompassRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCompassReleaseRequest)
+func _CompassService_CreateRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateReleaseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CompassServiceServer).CreateCompassRelease(ctx, in)
+		return srv.(CompassServiceServer).CreateRelease(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/compass.CompassService/CreateCompassRelease",
+		FullMethod: "/compass.CompassService/CreateRelease",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompassServiceServer).CreateCompassRelease(ctx, req.(*CreateCompassReleaseRequest))
+		return srv.(CompassServiceServer).CreateRelease(ctx, req.(*CreateReleaseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CompassService_UpdateCompassRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCompassReleaseRequest)
+func _CompassService_DeleteRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteReleaseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CompassServiceServer).UpdateCompassRelease(ctx, in)
+		return srv.(CompassServiceServer).DeleteRelease(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/compass.CompassService/UpdateCompassRelease",
+		FullMethod: "/compass.CompassService/DeleteRelease",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompassServiceServer).UpdateCompassRelease(ctx, req.(*UpdateCompassReleaseRequest))
+		return srv.(CompassServiceServer).DeleteRelease(ctx, req.(*DeleteReleaseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CompassService_UpgradeCompassRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpgradeCompassReleaseRequest)
+func _CompassService_UpdateRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateReleaseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CompassServiceServer).UpgradeCompassRelease(ctx, in)
+		return srv.(CompassServiceServer).UpdateRelease(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/compass.CompassService/UpgradeCompassRelease",
+		FullMethod: "/compass.CompassService/UpdateRelease",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompassServiceServer).UpgradeCompassRelease(ctx, req.(*UpgradeCompassReleaseRequest))
+		return srv.(CompassServiceServer).UpdateRelease(ctx, req.(*UpdateReleaseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_UpgradeRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpgradeReleaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).UpgradeRelease(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/UpgradeRelease",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).UpgradeRelease(ctx, req.(*UpgradeReleaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_ListReleases_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListReleasesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).ListReleases(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/ListReleases",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).ListReleases(ctx, req.(*ListReleasesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_GetReleaseStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReleaseStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).GetReleaseStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/GetReleaseStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).GetReleaseStatus(ctx, req.(*GetReleaseStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_GetReleaseContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReleaseContentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).GetReleaseContent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/GetReleaseContent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).GetReleaseContent(ctx, req.(*GetReleaseContentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_GetReleaseHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReleaseHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).GetReleaseHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/GetReleaseHistory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).GetReleaseHistory(ctx, req.(*GetReleaseHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_RollbackRelease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RollbackReleaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompassServiceServer).RollbackRelease(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/compass.CompassService/RollbackRelease",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompassServiceServer).RollbackRelease(ctx, req.(*RollbackReleaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompassService_RunReleaseTest_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(TestReleaseRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(CompassServiceServer).RunReleaseTest(m, &compassServiceRunReleaseTestServer{stream})
+}
+
+type CompassService_RunReleaseTestServer interface {
+	Send(*TestReleaseResponse) error
+	grpc.ServerStream
+}
+
+type compassServiceRunReleaseTestServer struct {
+	grpc.ServerStream
+}
+
+func (x *compassServiceRunReleaseTestServer) Send(m *TestReleaseResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 var _CompassService_serviceDesc = grpc.ServiceDesc{
@@ -356,54 +1203,128 @@ var _CompassService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*CompassServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateCompassRelease",
-			Handler:    _CompassService_CreateCompassRelease_Handler,
+			MethodName: "CreateRelease",
+			Handler:    _CompassService_CreateRelease_Handler,
 		},
 		{
-			MethodName: "UpdateCompassRelease",
-			Handler:    _CompassService_UpdateCompassRelease_Handler,
+			MethodName: "DeleteRelease",
+			Handler:    _CompassService_DeleteRelease_Handler,
 		},
 		{
-			MethodName: "UpgradeCompassRelease",
-			Handler:    _CompassService_UpgradeCompassRelease_Handler,
+			MethodName: "UpdateRelease",
+			Handler:    _CompassService_UpdateRelease_Handler,
+		},
+		{
+			MethodName: "UpgradeRelease",
+			Handler:    _CompassService_UpgradeRelease_Handler,
+		},
+		{
+			MethodName: "ListReleases",
+			Handler:    _CompassService_ListReleases_Handler,
+		},
+		{
+			MethodName: "GetReleaseStatus",
+			Handler:    _CompassService_GetReleaseStatus_Handler,
+		},
+		{
+			MethodName: "GetReleaseContent",
+			Handler:    _CompassService_GetReleaseContent_Handler,
+		},
+		{
+			MethodName: "GetReleaseHistory",
+			Handler:    _CompassService_GetReleaseHistory_Handler,
+		},
+		{
+			MethodName: "RollbackRelease",
+			Handler:    _CompassService_RollbackRelease_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "RunReleaseTest",
+			Handler:       _CompassService_RunReleaseTest_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "compass.proto",
 }
 
 func init() { proto.RegisterFile("compass.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 476 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0xcd, 0x6e, 0xd4, 0x30,
-	0x10, 0xc7, 0xe5, 0xee, 0x17, 0x3b, 0x15, 0x1c, 0xac, 0xad, 0xb0, 0xd2, 0x45, 0x5a, 0x45, 0x80,
-	0xa2, 0x1c, 0x62, 0xba, 0xa8, 0x1c, 0x0a, 0x27, 0xf6, 0x01, 0x40, 0x41, 0x5c, 0xb8, 0x99, 0x74,
-	0x48, 0x23, 0xed, 0xc6, 0x21, 0xf6, 0x86, 0x03, 0xea, 0x85, 0x47, 0x00, 0x71, 0xe1, 0x86, 0x78,
-	0x10, 0x1e, 0x82, 0x57, 0xe0, 0x1d, 0xb8, 0xa2, 0x38, 0x76, 0x09, 0x28, 0xbb, 0x0b, 0xa5, 0xa7,
-	0x78, 0x3c, 0xa3, 0x99, 0xdf, 0x7f, 0x66, 0x1c, 0xb8, 0x9e, 0xc8, 0x55, 0x21, 0x94, 0x8a, 0x8a,
-	0x52, 0x6a, 0x49, 0x47, 0xd6, 0xf4, 0xbc, 0x33, 0x51, 0x64, 0xbc, 0xc4, 0x25, 0x0a, 0x85, 0xee,
-	0xdb, 0x04, 0x79, 0x37, 0x8d, 0x2f, 0x39, 0x13, 0xa5, 0xe6, 0x89, 0xcc, 0x5f, 0x65, 0xa9, 0x75,
-	0x4c, 0x53, 0x29, 0xd3, 0x25, 0xf2, 0xda, 0x2d, 0xf2, 0x5c, 0x6a, 0xa1, 0x33, 0x99, 0xdb, 0xdc,
-	0xfe, 0x57, 0x02, 0x87, 0x8b, 0x12, 0x85, 0xc6, 0x45, 0x53, 0x24, 0x6e, 0xb2, 0xc6, 0xf8, 0x7a,
-	0x8d, 0x4a, 0xd3, 0x09, 0x0c, 0x4c, 0x4e, 0x46, 0x66, 0x24, 0x18, 0xc7, 0x8d, 0x41, 0x29, 0xf4,
-	0x73, 0xb1, 0x42, 0xb6, 0x67, 0x2e, 0xcd, 0x99, 0x4e, 0x61, 0x5c, 0x7f, 0x55, 0x21, 0x12, 0x64,
-	0x3d, 0xe3, 0xf8, 0x75, 0x41, 0x43, 0x18, 0x56, 0x62, 0xb9, 0x46, 0xc5, 0xfa, 0x33, 0x12, 0xec,
-	0xcf, 0x69, 0x54, 0xf3, 0x46, 0x26, 0x5d, 0xb4, 0x30, 0xbc, 0xb1, 0x8d, 0xa0, 0x0c, 0x46, 0x3a,
-	0x5b, 0xa1, 0x5c, 0x6b, 0x36, 0x98, 0x91, 0xa0, 0x17, 0x3b, 0xb3, 0xae, 0xfb, 0x46, 0x64, 0x9a,
-	0x0d, 0x67, 0x24, 0xb8, 0x16, 0x9b, 0xb3, 0xff, 0x04, 0xa6, 0xdd, 0x02, 0x54, 0x21, 0x73, 0x85,
-	0x94, 0xc3, 0xc8, 0x76, 0xca, 0x68, 0xd8, 0x9f, 0x1f, 0x34, 0xa5, 0x5d, 0xfb, 0x5c, 0xbc, 0x8b,
-	0xf2, 0x3f, 0x12, 0x38, 0x7c, 0x5e, 0x9c, 0x6e, 0x6c, 0x89, 0x13, 0x4f, 0x5a, 0xe2, 0x19, 0x8c,
-	0x2a, 0x2c, 0x55, 0x26, 0x73, 0xd3, 0x93, 0x41, 0xec, 0xcc, 0x96, 0xf0, 0xde, 0x4e, 0xe1, 0xbf,
-	0xb5, 0xb0, 0xff, 0x47, 0x0b, 0x6b, 0xa1, 0xdd, 0x58, 0x97, 0x15, 0xfa, 0x9e, 0xd4, 0x19, 0xd3,
-	0x52, 0x9c, 0xfe, 0xf7, 0xf0, 0xaf, 0x4e, 0xe5, 0x53, 0xb8, 0xb5, 0x81, 0xe9, 0x92, 0x32, 0xe7,
-	0x3f, 0x7a, 0x70, 0xc3, 0xe6, 0x7a, 0x86, 0x65, 0x95, 0x25, 0x48, 0x3f, 0x11, 0x98, 0x74, 0x2d,
-	0x0d, 0xbd, 0x1d, 0xb9, 0xa7, 0xb7, 0xe5, 0x51, 0x78, 0x77, 0x76, 0x44, 0x35, 0xa4, 0xfe, 0xf1,
-	0xbb, 0x6f, 0xdf, 0x3f, 0xec, 0x71, 0x3f, 0xe4, 0xd5, 0x11, 0xbf, 0x50, 0xa8, 0xf8, 0xdb, 0x8b,
-	0xf3, 0xb9, 0x7b, 0xc4, 0xf6, 0xf2, 0xfc, 0x84, 0x84, 0xf4, 0x33, 0x81, 0x49, 0xd7, 0xa0, 0x5b,
-	0x70, 0x5b, 0xd6, 0xb3, 0x05, 0xb7, 0x6d, 0x5b, 0xfc, 0x47, 0x06, 0xee, 0x81, 0x77, 0xf4, 0xf7,
-	0x70, 0xbc, 0x19, 0x60, 0xcd, 0xf8, 0x85, 0xc0, 0x41, 0xe7, 0x98, 0x68, 0xbb, 0xfc, 0xe6, 0xd5,
-	0xf2, 0xee, 0xee, 0x0a, 0xb3, 0x98, 0x0f, 0x0d, 0xe6, 0xb1, 0x77, 0xef, 0x1f, 0x30, 0xcd, 0xd6,
-	0x9d, 0x90, 0xf0, 0xf1, 0xf8, 0x85, 0xfb, 0x75, 0xbe, 0x1c, 0x9a, 0xdf, 0xdd, 0xfd, 0x9f, 0x01,
-	0x00, 0x00, 0xff, 0xff, 0xb4, 0xdc, 0x7e, 0x5c, 0x5b, 0x05, 0x00, 0x00,
+	// 1182 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0xdd, 0x6e, 0x1b, 0x45,
+	0x14, 0x66, 0x6c, 0xc7, 0x3f, 0x27, 0x75, 0x70, 0xa7, 0x4e, 0xb2, 0xdd, 0xa6, 0xc5, 0x6c, 0x05,
+	0x8a, 0x02, 0xb2, 0x1b, 0xb7, 0x45, 0x50, 0x2a, 0xa4, 0xd4, 0x89, 0x48, 0x21, 0xa4, 0xd2, 0xba,
+	0x15, 0x12, 0x82, 0x46, 0x1b, 0x7b, 0xec, 0xac, 0xea, 0xec, 0x98, 0xdd, 0xd9, 0x90, 0x50, 0xe5,
+	0x26, 0x12, 0x42, 0x08, 0xd4, 0x0b, 0x90, 0xb8, 0x40, 0xe2, 0x92, 0x77, 0xe0, 0x3d, 0x78, 0x05,
+	0x1e, 0x04, 0xcd, 0xec, 0xec, 0x66, 0x67, 0xbd, 0x4e, 0x6c, 0x8b, 0x5e, 0x79, 0xce, 0x9c, 0xf1,
+	0x9c, 0xef, 0xfb, 0x66, 0xce, 0x99, 0xb3, 0x50, 0xee, 0xd0, 0xc3, 0xa1, 0xe5, 0x79, 0xf5, 0xa1,
+	0x4b, 0x19, 0xc5, 0x05, 0x69, 0xea, 0xfa, 0x81, 0x35, 0xb4, 0x1b, 0x2e, 0x19, 0x10, 0xcb, 0x23,
+	0xe1, 0x6f, 0xb0, 0x48, 0xbf, 0xae, 0xf8, 0x3c, 0x66, 0x31, 0x5f, 0xfe, 0x5f, 0xbf, 0xa1, 0xb8,
+	0x18, 0xf1, 0xd8, 0x9e, 0xeb, 0x3b, 0xd2, 0xb9, 0xac, 0x38, 0x6d, 0xa7, 0x47, 0x15, 0x47, 0xe7,
+	0xc0, 0x72, 0x59, 0xa3, 0x43, 0x9d, 0x9e, 0xdd, 0x97, 0x8e, 0x95, 0x3e, 0xa5, 0xfd, 0x01, 0x69,
+	0x70, 0xb7, 0xe5, 0x38, 0x94, 0x59, 0xcc, 0xa6, 0x8e, 0x0c, 0x66, 0xfc, 0x8d, 0xa0, 0xda, 0x72,
+	0x89, 0xc5, 0x88, 0x19, 0xec, 0x69, 0x92, 0x6f, 0x7d, 0xe2, 0x31, 0x5c, 0x85, 0x39, 0xb1, 0x99,
+	0x86, 0x6a, 0x68, 0xb5, 0x64, 0x06, 0x06, 0xc6, 0x90, 0x73, 0xac, 0x43, 0xa2, 0x65, 0xc4, 0xa4,
+	0x18, 0xe3, 0x15, 0x28, 0xf1, 0x5f, 0x6f, 0x68, 0x75, 0x88, 0x96, 0x15, 0x8e, 0xf3, 0x09, 0xbc,
+	0x06, 0xf9, 0x23, 0x6b, 0xe0, 0x13, 0x4f, 0xcb, 0xd5, 0xd0, 0xea, 0x7c, 0x13, 0xd7, 0x39, 0xd0,
+	0xba, 0xd8, 0xae, 0xde, 0x12, 0x40, 0x4d, 0xb9, 0x02, 0x6b, 0x50, 0x60, 0xf6, 0x21, 0xa1, 0x3e,
+	0xd3, 0xe6, 0x6a, 0x68, 0x35, 0x6b, 0x86, 0x26, 0x8f, 0xfb, 0x9d, 0x65, 0x33, 0x2d, 0x5f, 0x43,
+	0xab, 0x45, 0x53, 0x8c, 0x8d, 0x6d, 0x58, 0x4c, 0x20, 0xf7, 0x86, 0xd4, 0xf1, 0x08, 0x6e, 0x40,
+	0x41, 0x0a, 0x24, 0xc0, 0xcf, 0x37, 0x17, 0x83, 0x98, 0xe1, 0x09, 0x84, 0xeb, 0xc3, 0x55, 0xc6,
+	0x2b, 0x04, 0xd5, 0x67, 0xc3, 0xee, 0xa8, 0x08, 0x21, 0x5d, 0x14, 0xa3, 0xab, 0x41, 0xe1, 0x88,
+	0xb8, 0x9e, 0x4d, 0x1d, 0xa1, 0xc2, 0x9c, 0x19, 0x9a, 0x31, 0xaa, 0xd9, 0x4b, 0xa9, 0x2a, 0xa2,
+	0xe5, 0x12, 0xa2, 0x71, 0x6a, 0x09, 0x3c, 0xb3, 0x52, 0xfb, 0x19, 0xf1, 0xad, 0xfa, 0xae, 0xd5,
+	0x9d, 0xfd, 0x80, 0xff, 0x3f, 0x5e, 0x8f, 0x61, 0x29, 0x09, 0x66, 0x56, 0x62, 0x16, 0x5c, 0xdb,
+	0xb1, 0x3d, 0x26, 0xe7, 0xbd, 0x18, 0xab, 0x81, 0x7d, 0x68, 0x07, 0xac, 0xb2, 0x66, 0x60, 0xe0,
+	0x25, 0xc8, 0xd3, 0x5e, 0xcf, 0x23, 0x4c, 0xf2, 0x92, 0xd6, 0xc5, 0x57, 0xd7, 0x78, 0x0e, 0x45,
+	0x1e, 0xa2, 0x4d, 0x5d, 0x66, 0x34, 0x21, 0xcf, 0x7f, 0x1f, 0x9d, 0xe0, 0x79, 0x28, 0x3c, 0xdb,
+	0xfd, 0x7c, 0xf7, 0xc9, 0x97, 0xbb, 0x95, 0x37, 0x70, 0x11, 0x72, 0xbb, 0x1b, 0x5f, 0x6c, 0x55,
+	0x10, 0xbe, 0x0a, 0xe5, 0x9d, 0x8d, 0xf6, 0xd3, 0x3d, 0x73, 0x6b, 0x67, 0x6b, 0xa3, 0xbd, 0xb5,
+	0x59, 0xc9, 0x18, 0xb7, 0xa0, 0xc4, 0xff, 0xf3, 0xc4, 0xed, 0x12, 0x17, 0x17, 0x20, 0xbb, 0xd1,
+	0x6e, 0x05, 0x7f, 0xd9, 0xdc, 0x6a, 0xb7, 0x2a, 0xc8, 0xf8, 0x09, 0x41, 0x55, 0xe5, 0x20, 0xc5,
+	0xe0, 0x47, 0x43, 0x7d, 0x27, 0x22, 0x21, 0x0c, 0x71, 0x34, 0xe4, 0x98, 0x45, 0x47, 0x43, 0x8e,
+	0x05, 0x5d, 0x46, 0x99, 0x35, 0x10, 0xe0, 0xb3, 0x66, 0x60, 0xe0, 0x75, 0x28, 0x4a, 0x99, 0x78,
+	0xd6, 0x65, 0xc7, 0xab, 0x19, 0x2d, 0x33, 0x08, 0x2c, 0x7f, 0x4a, 0x42, 0x24, 0x6d, 0x51, 0x8e,
+	0x66, 0x4b, 0x82, 0x8b, 0x25, 0x65, 0xa0, 0x8d, 0x86, 0x91, 0xac, 0xd3, 0xe2, 0xbc, 0x0b, 0x39,
+	0x5e, 0xe3, 0x44, 0x90, 0xe8, 0xe2, 0x85, 0x2c, 0x1e, 0x3b, 0x3d, 0x6a, 0x0a, 0xff, 0x25, 0x51,
+	0x7b, 0xf1, 0xa8, 0x2d, 0xea, 0x30, 0xe2, 0xb0, 0xd7, 0xc1, 0x6e, 0x07, 0xae, 0xa7, 0xc4, 0x99,
+	0xf5, 0x86, 0x9f, 0x65, 0x60, 0xc9, 0xa4, 0x83, 0xc1, 0xbe, 0xd5, 0x79, 0x31, 0x41, 0x5d, 0x5a,
+	0x86, 0x42, 0xd7, 0x3d, 0xe1, 0x4f, 0x85, 0x00, 0x5d, 0x34, 0xf3, 0x5d, 0xf7, 0xc4, 0xf4, 0x1d,
+	0x7c, 0x1b, 0xca, 0x5d, 0xdb, 0xb3, 0xf6, 0x07, 0x64, 0xef, 0x80, 0xd2, 0x17, 0x41, 0x16, 0x17,
+	0xcd, 0x2b, 0x72, 0x72, 0x9b, 0xcf, 0xc5, 0x29, 0xe7, 0x54, 0xca, 0x3a, 0xbf, 0x4c, 0x1d, 0x51,
+	0x68, 0x45, 0x55, 0x2e, 0x9a, 0x91, 0x1d, 0x2f, 0xd8, 0xf9, 0xf4, 0x82, 0x5d, 0x38, 0x2f, 0xd8,
+	0xfc, 0xb2, 0xf6, 0xa8, 0xdb, 0x21, 0x5a, 0x51, 0x4c, 0x06, 0x86, 0x2a, 0x69, 0x29, 0x29, 0xe9,
+	0x67, 0xb0, 0x3c, 0xa2, 0xc1, 0xac, 0x82, 0xfe, 0x89, 0xa0, 0xba, 0x49, 0x06, 0x64, 0xa2, 0x32,
+	0x3f, 0xa2, 0x5a, 0x26, 0x45, 0xb5, 0x2a, 0xcc, 0x0d, 0x7d, 0xb7, 0x4f, 0xa4, 0xa4, 0x81, 0x11,
+	0x57, 0x25, 0xa7, 0xaa, 0xa2, 0x70, 0x9d, 0x4b, 0x72, 0xfd, 0x1a, 0x16, 0x13, 0xf0, 0x66, 0x64,
+	0xca, 0x09, 0x45, 0x69, 0x53, 0x0a, 0x52, 0xc4, 0x78, 0x1e, 0x4f, 0x82, 0x6d, 0xdb, 0x63, 0xd4,
+	0x3d, 0xb9, 0x48, 0x80, 0x0a, 0x64, 0x0f, 0xad, 0x63, 0x99, 0x00, 0x7c, 0x78, 0xc9, 0xe5, 0xdf,
+	0x8d, 0x5f, 0xfe, 0x68, 0x7f, 0xc9, 0x20, 0x5e, 0x91, 0xd0, 0x64, 0x15, 0xe9, 0x7b, 0xc0, 0x4f,
+	0x49, 0x54, 0x1c, 0x2f, 0x49, 0xd7, 0x50, 0xef, 0x8c, 0xaa, 0xb7, 0x06, 0x85, 0xce, 0x80, 0x58,
+	0x8e, 0x3f, 0x94, 0x27, 0x14, 0x9a, 0x97, 0xbc, 0x53, 0xdf, 0xc0, 0x35, 0x25, 0xb6, 0x64, 0xc1,
+	0x25, 0xf1, 0xfa, 0x32, 0x36, 0x1f, 0xe2, 0x7b, 0x90, 0x0f, 0x7a, 0x37, 0x11, 0x79, 0xa1, 0xb9,
+	0xa2, 0xb2, 0x12, 0x9b, 0xf8, 0x4e, 0x5d, 0x56, 0x3a, 0xb9, 0xb6, 0xf9, 0xd7, 0x3c, 0x2c, 0xb4,
+	0x82, 0x26, 0xb1, 0x4d, 0xdc, 0x23, 0xbb, 0x43, 0xf0, 0x0f, 0x08, 0xca, 0x4a, 0x37, 0x83, 0x6f,
+	0xd6, 0xc3, 0xb6, 0x32, 0xad, 0x3f, 0xd3, 0x6f, 0x8d, 0x73, 0x07, 0x58, 0x8d, 0xfb, 0x67, 0xff,
+	0xfc, 0xfb, 0x5b, 0xa6, 0x61, 0xac, 0x35, 0x8e, 0xd6, 0x1b, 0x11, 0x33, 0xaf, 0xf1, 0x32, 0x1a,
+	0x9f, 0x86, 0x6d, 0xa4, 0x9c, 0x3c, 0x7d, 0x80, 0xd6, 0xf0, 0x19, 0x82, 0xb2, 0x72, 0x09, 0x63,
+	0x38, 0xd2, 0x72, 0x27, 0x86, 0x23, 0xf5, 0xee, 0x1a, 0x4d, 0x81, 0xe3, 0xfd, 0xb5, 0x29, 0x70,
+	0xe0, 0x5f, 0x10, 0x94, 0x95, 0xfe, 0x27, 0x06, 0x22, 0xad, 0x4f, 0x8b, 0x81, 0x48, 0x6d, 0x9b,
+	0x8c, 0x87, 0x02, 0xc4, 0x07, 0xfa, 0xfa, 0xe4, 0x20, 0x1a, 0x41, 0x43, 0xc3, 0x35, 0x79, 0x85,
+	0x60, 0x41, 0x6d, 0x5b, 0x70, 0x3c, 0x60, 0x4a, 0x73, 0xa5, 0xbf, 0x35, 0xd6, 0x2f, 0x11, 0x7d,
+	0x2c, 0x10, 0xdd, 0xd7, 0xef, 0x4c, 0x81, 0x48, 0x34, 0x5c, 0x1c, 0xd0, 0x31, 0x5c, 0x89, 0xf7,
+	0x0d, 0x78, 0x25, 0x8a, 0x96, 0xd2, 0x12, 0xe9, 0x37, 0xc7, 0x78, 0x25, 0x92, 0xf7, 0x04, 0x92,
+	0x77, 0xf0, 0xed, 0x09, 0x90, 0xe0, 0x5f, 0x11, 0x54, 0x92, 0x0f, 0x38, 0xae, 0x45, 0x01, 0xc6,
+	0xb4, 0x10, 0xfa, 0xdb, 0x17, 0xac, 0x90, 0x30, 0x3e, 0x12, 0x30, 0xee, 0xe2, 0x69, 0x8e, 0x28,
+	0x48, 0x27, 0xfc, 0x3b, 0x82, 0xab, 0x23, 0xef, 0x2e, 0x4e, 0x8b, 0xa9, 0xbe, 0xfd, 0xba, 0x71,
+	0xd1, 0x12, 0x89, 0xeb, 0x81, 0xc0, 0x75, 0x0f, 0x37, 0xa7, 0x39, 0x28, 0x09, 0x41, 0x05, 0x26,
+	0x6b, 0x62, 0x2a, 0x30, 0xb5, 0x1e, 0xa7, 0x02, 0x4b, 0x94, 0xd4, 0x99, 0x80, 0x1d, 0x48, 0x08,
+	0x7f, 0x20, 0x78, 0x33, 0xf1, 0xac, 0xe2, 0xf3, 0x2b, 0x9b, 0xde, 0x74, 0xe8, 0xb5, 0xf1, 0x0b,
+	0x24, 0xa4, 0x4d, 0x01, 0xe9, 0x13, 0xe3, 0xe1, 0x34, 0x69, 0x16, 0xb4, 0x19, 0x8d, 0x97, 0x72,
+	0x70, 0x8a, 0x7f, 0x44, 0xb0, 0x60, 0xfa, 0x8e, 0xdc, 0x9c, 0x97, 0x50, 0x7c, 0x23, 0x0a, 0x3d,
+	0xfa, 0x24, 0xe8, 0x2b, 0xe9, 0x4e, 0x89, 0xe9, 0x43, 0x81, 0xa9, 0x69, 0x4c, 0x93, 0x68, 0xfc,
+	0x9b, 0xdb, 0xbb, 0x83, 0x1e, 0x95, 0xbe, 0x0a, 0xbf, 0xe5, 0xf7, 0xf3, 0xe2, 0x73, 0xf9, 0xee,
+	0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x08, 0x34, 0x53, 0x29, 0xec, 0x0f, 0x00, 0x00,
 }

@@ -1,44 +1,28 @@
 package client
 
+type Config struct {
+	ReleaseAddr  string
+	RegistryAddr string
+	Logger       Logger
+}
+
 type Fusion interface {
-	Connect() error
-	Shutdown()
 	Release() Release
 	Registry() Registry
 }
 
-func NewFusion(registryAddr string, releaseAddr string) Fusion {
+func NewFusion(config Config) Fusion {
 	return &fusion{
-		release:  NewCompassReleaseClient(releaseAddr),
-		registry: NewHelmRegistryClient(registryAddr),
+		logger:   config.Logger,
+		release:  NewReleaseClient(config.ReleaseAddr),
+		registry: NewHelmRegistryClient(config.RegistryAddr),
 	}
 }
 
 type fusion struct {
+	logger   Logger
 	release  Release
 	registry Registry
-}
-
-func (f *fusion) Connect() error {
-	var err error
-	defer func() {
-		if err == nil {
-			return
-		}
-		f.release.Shutdown()
-		f.registry.Shutdown()
-	}()
-	err = f.release.Connect()
-	if err != nil {
-		return err
-	}
-	err = f.registry.Connect()
-	return err
-}
-
-func (f *fusion) Shutdown() {
-	f.release.Shutdown()
-	f.registry.Shutdown()
 }
 
 func (f *fusion) Release() Release {

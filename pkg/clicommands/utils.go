@@ -15,7 +15,7 @@ func defaultRegistryClient() (api.Registry, error) {
 		registryAddr = "http://192.168.99.100:32588"
 	}
 	client := api.NewHelmRegistryClient(registryAddr)
-	return client, client.Connect()
+	return client, nil
 }
 
 func defaultReleaseClient() (api.Release, error) {
@@ -23,8 +23,8 @@ func defaultReleaseClient() (api.Release, error) {
 	if compassAddr == "" {
 		compassAddr = "192.168.99.100:32589"
 	}
-	client := api.NewCompassReleaseClient(compassAddr)
-	return client, client.Connect()
+	client := api.NewReleaseClient(compassAddr)
+	return client, nil
 }
 
 func splitSpaceChart(arg string) (string, string, error) {

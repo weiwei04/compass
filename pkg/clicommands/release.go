@@ -63,7 +63,6 @@ var installReleaseCommand = cli.Command{
 		if err != nil {
 			return err
 		}
-		defer client.Shutdown()
 
 		req := &api.CreateReleaseRequest{
 			Chart:     chart,
@@ -113,7 +112,6 @@ var updateReleaseCommand = cli.Command{
 		if err != nil {
 			return err
 		}
-		defer client.Shutdown()
 
 		req := &api.UpdateReleaseRequest{
 			Name:   releaseName,
@@ -169,7 +167,6 @@ var upgradeReleaseCommand = cli.Command{
 		if err != nil {
 			return err
 		}
-		defer client.Shutdown()
 
 		req := &api.UpgradeReleaseRequest{
 			Name:   releaseName,

@@ -1,7 +1,14 @@
 package compass
 
+import (
+	"go.uber.org/zap"
+)
+
 type Config struct {
 	TillerAddr   string
 	RegistryAddr string
-	ListenAt     string
+	RPCAddr      string
+	RESTAddr     string
+	Mock         bool
+	Logger       *zap.Logger
 }
