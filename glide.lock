@@ -1,5 +1,5 @@
-hash: b88eabea77f6a49872f1580e12e7d7c7a69c09f627ee096f52d08c6c3b7696b0
-updated: 2017-08-28T14:09:29.407953031+08:00
+hash: 394170ec15dc94b8d8d85e416f81bead298c2dcc44b5fa5a104be73374283afa
+updated: 2017-08-29T00:35:42.795731389+08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: b26d9c308763d68093482582cea63d69be07a0f0
@@ -39,7 +39,6 @@ imports:
 - name: github.com/grpc-ecosystem/go-grpc-middleware
   version: f63a7dfb64c138bd93d5c5b896d8b33c4b08e000
   subpackages:
-  - logging
   - logging/zap
   - tags
 - name: github.com/grpc-ecosystem/grpc-gateway
@@ -101,7 +100,7 @@ imports:
   - googleapis/api/annotations
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: ""
+  version: b3ddf786825de56a4178401b7e174ee332173b66
   subpackages:
   - codes
   - connectivity
