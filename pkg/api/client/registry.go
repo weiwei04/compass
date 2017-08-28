@@ -143,8 +143,6 @@ type FetchChartResponse struct {
 }
 
 type Registry interface {
-	Connect() error
-	Shutdown()
 	// 列取space
 	ListSpaces(context.Context, *ListSpacesRequest) (*ListSpacesResponse, error)
 	CreateSpace(context.Context, *CreateSpaceRequest) (*CreateSpaceResponse, error)

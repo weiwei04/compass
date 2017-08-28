@@ -2,12 +2,46 @@ syntax = "proto3";
 
 package compass;
 
-import "hapi/release/release.proto";
+//import "hapi/release/release.proto";
+//import "hapi/release/status.proto";
+import "hapi/release/test_run.proto";
+import "hapi/release/test_suite.proto";
+//import "hapi/release/info.proto";
 import "hapi/chart/config.proto";
+import "hapi/chart/chart.proto";
+import "google/api/annotations.proto";
+//import "google/protobuf/timestamp.proto";
+//import "google/protobuf/empty.proto";
+//import "google/protobuf/duration.proto";
+//import "google/protobuf/timestamp.proto";
 
 option go_package = "compass";
 
-message CreateCompassReleaseRequest {
+message Status {
+  int32 code = 1;
+  string resources = 2;
+  string notes = 3;
+  hapi.release.TestSuite last_test_suite_run = 4;
+}
+
+message Info {
+  Status status = 1;
+  int64 first_deployed = 2;
+  int64 last_deployed = 3;
+  int64 deleted = 4;
+  string Description = 5;
+}
+
+message Release {
+  string name = 1;
+  Info info = 2;
+  hapi.chart.Chart chart = 3;
+  hapi.chart.Config config = 4;
+  int32 version = 5;
+  string namespace = 6;
+}
+
+message CreateReleaseRequest {
   string chart = 1;
   string name = 2;
   string namespace = 3;
@@ -16,32 +50,303 @@ message CreateCompassReleaseRequest {
   bool wait = 6;
 }
 
-message CreateCompassReleaseResponse {
-  hapi.release.Release release = 1;
+message CreateReleaseResponse {
+  Release release = 1;
 }
 
-message UpdateCompassReleaseRequest {
+message UpdateReleaseRequest {
   string name = 1;
   int32 version = 2;
   hapi.chart.Config values = 3;
+  string namespace = 4; // only for auth, not used in compass
 }
 
-message UpdateCompassReleaseResponse {
-  hapi.release.Release release = 1;
+message UpdateReleaseResponse {
+  Release release = 1;
 }
 
-message UpgradeCompassReleaseRequest {
+message UpgradeReleaseRequest {
   string chart = 1;
   string name = 2;
   hapi.chart.Config values = 3;
+  string namespace = 4; // only for auth, not used in compass
 }
 
-message UpgradeCompassReleaseResponse {
-  hapi.release.Release release = 1;
+message UpgradeReleaseResponse {
+  Release release = 1;
+}
+
+// ListReleasesRequest requests a list of releases.
+//
+// Releases can be retrieved in chunks by setting limit and offset.
+//
+// Releases can be sorted according to a few pre-determined sort stategies.
+message ListReleasesRequest {
+  // Limit is the maximum number of releases to be returned.
+  int64 limit  = 1;
+
+  // Offset is the last release name that was seen. The next listing
+  // operation will start with the name after this one.
+  // Example: If list one returns albert, bernie, carl, and sets 'next: dennis'.
+  // dennis is the offset. Supplying 'dennis' for the next request should
+  // cause the next batch to return a set of results starting with 'dennis'.
+  string offset = 2;
+
+  // SortBy is the sort field that the ListReleases server should sort data before returning.
+  //ListSort.SortBy sort_by = 3;
+
+  // Filter is a regular expression used to filter which releases should be listed.
+  //
+  // Anything that matches the regexp will be included in the results.
+  //string filter = 4;
+
+  // SortOrder is the ordering directive used for sorting.
+  //ListSort.SortOrder sort_order = 5;
+
+  //repeated hapi.release.Status.Code status_codes = 6;
+  // Namespace is the filter to select releases only from a specific namespace.
+  string namespace = 3;
+}
+
+// ListSort defines sorting fields on a release list.
+message ListSort{
+  // SortBy defines sort operations.
+  enum SortBy {
+  	UNKNOWN = 0;
+  	NAME = 1;
+  	LAST_RELEASED = 2;
+  }
+  
+  // SortOrder defines sort orders to augment sorting operations.
+  enum SortOrder {
+  	ASC = 0;
+  	DESC = 1;
+  }
+}
+
+// ListReleasesResponse is a list of releases.
+message ListReleasesResponse {
+  // Count is the expected total number of releases to be returned.
+  int64 count  = 1;
+
+  // Next is the name of the next release. If this is other than an empty
+  // string, it means there are more results.
+  string next = 2;
+
+  // Total is the total number of queryable releases.
+  int64 total  = 3;
+
+  // Releases is the list of found release objects.
+  //repeated hapi.release.Release releases = 4;
+  repeated Release releases = 4;
+}
+
+// GetReleaseStatusRequest is a request to get the status of a release.
+message GetReleaseStatusRequest {
+  // Name is the name of the release
+  string name = 1;
+  // Version is the version of the release
+  int32 version = 2;
+  // just for auth
+  string namespace = 3;
+}
+
+// GetReleaseStatusResponse is the response indicating the status of the named release.
+message GetReleaseStatusResponse {
+  // Name is the name of the release.
+  string name = 1;
+
+  // Info contains information about the release.
+  Info info = 2;
+
+  // Namesapce the release was released into
+  string namespace = 3;
+}
+
+// GetReleaseContentRequest is a request to get the contents of a release.
+message GetReleaseContentRequest {
+  // The name of the release
+  string name = 1;
+  // Version is the version of the release
+  int32 version = 2;
+  // just for auth
+  string namespace = 3;
+}
+
+// GetReleaseContentResponse is a response containing the contents of a release.
+message GetReleaseContentResponse {
+  // The release content
+  //hapi.release.Release release = 1;
+  Release release = 1;
+}
+
+message RollbackReleaseRequest {
+  // The name of the release
+  string name = 1;
+  // dry_run, if true, will run through the release logic but no create
+  bool dry_run = 2;
+  // DisableHooks causes the server to skip running any hooks for the rollback
+  bool disable_hooks = 3;
+  // Version is the version of the release to deploy.
+  int32 version = 4;
+  // Performs pods restart for resources if applicable
+  bool recreate = 5;
+  // timeout specifies the max amount of time any kubernetes client command can run.
+  int64 timeout = 6;
+  // wait, if true, will wait until all Pods, PVCs, and Services are in a ready state
+  // before marking the release as successful. It will wait for as long as timeout
+  bool wait = 7;
+  // Force resource update through delete/recreate if needed.
+  bool force = 8;
+
+  string namespace = 9;
+}
+
+// RollbackReleaseResponse is the response to an update request.
+message RollbackReleaseResponse {
+  //hapi.release.Release release = 1;
+  Release release = 1;
+}
+
+// UninstallReleaseRequest represents a request to uninstall a named release.
+message DeleteReleaseRequest {
+  string name = 1; // for auth?
+  // DisableHooks causes the server to skip running any hooks for the uninstall.
+  bool disable_hooks = 2;
+  // Purge removes the release from the store and make its name free for later use.
+  bool purge = 3;
+  // timeout specifies the max amount of time any kubernetes client command can run.
+  int64 timeout = 4;
+  string namespace = 5;
+}
+
+// UninstallReleaseResponse represents a successful response to an uninstall request.
+message DeleteReleaseResponse {
+  // Release is the release that was marked deleted.
+  //hapi.release.Release release = 1;
+  Release release = 1;
+  // Info is an uninstall message
+  string info = 2;
+}
+
+// GetVersionRequest requests for version information.
+//message GetVersionRequest {
+//}
+//
+//message GetVersionResponse {
+//  hapi.version.Version Version = 1;
+//}
+
+// GetHistoryRequest requests a release's history.
+message GetReleaseHistoryRequest {
+  // The name of the release.
+  string name = 1;
+  // The maximum number of releases to include.
+  int32 max = 2;
+  string namespace = 3;
+}
+
+// GetHistoryResponse is received in response to a GetHistory rpc.
+message GetReleaseHistoryResponse {
+  //repeated hapi.release.Release releases = 1;
+  repeated Release releases = 1;
+}
+
+// TestReleaseRequest is a request to get the status of a release.
+message TestReleaseRequest {
+  // Name is the name of the release
+  string name = 1;
+  // timeout specifies the max amount of time any kubernetes client command can run.
+  int64 timeout = 2;
+  // cleanup specifies whether or not to attempt pod deletion after test completes
+  bool cleanup = 3;
+  string namespace = 4;
+}
+
+// TestReleaseResponse represents a message from executing a test
+message TestReleaseResponse {
+  string msg = 1;
+  hapi.release.TestRun.Status status = 2;
 }
 
 service CompassService {
-  rpc CreateCompassRelease(CreateCompassReleaseRequest) returns (CreateCompassReleaseResponse);
-  rpc UpdateCompassRelease(UpdateCompassReleaseRequest) returns (UpdateCompassReleaseResponse);
-  rpc UpgradeCompassRelease(UpgradeCompassReleaseRequest) returns (UpgradeCompassReleaseResponse);
+  rpc CreateRelease(CreateReleaseRequest) returns (CreateReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1/namespaces/{namespace}/releases/{name}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteRelease(DeleteReleaseRequest) returns (DeleteReleaseResponse) {
+    option (google.api.http) = {
+      delete: "/v1/namespaces/{namespace}/releases/{name}"
+    };
+  }
+
+  rpc UpdateRelease(UpdateReleaseRequest) returns (UpdateReleaseResponse) {
+    option (google.api.http) = {
+      put: "/v1/namespaces/{namespace}/releases/{name}/values"
+      body: "*"
+    };
+  }
+
+  rpc UpgradeRelease(UpgradeReleaseRequest) returns (UpgradeReleaseResponse) {
+    option (google.api.http) = {
+      put: "/v1/namespaces/{namespace}/releases/{name}/chart"
+      body: "*"
+    };
+  }
+
+  // call the api like this
+  // get /v1/namespaces/NAMESPACE/releases?limit=10&offset=denis
+  //rpc ListReleases(ListReleasesRequest) returns (stream ListReleasesResponse) {
+  //  option (google.api.http) = {
+  //    get: "/v1/namespaces/{namespace}/releases"
+  //  };
+  //}
+
+
+  // call the api like this
+  // get /v1/namespaces/NAMESPACE/releases?limit=10&offset=denis
+  rpc ListReleases(ListReleasesRequest) returns (ListReleasesResponse) {
+    option (google.api.http) = {
+      get: "/v1/namespaces/{namespace}/releases"
+    };
+  }
+
+  rpc GetReleaseStatus(GetReleaseStatusRequest) returns (GetReleaseStatusResponse) {
+    option (google.api.http) = {
+      get: "/v1/namespaces/{namespace}/releases/{name}/status"
+    };
+  }
+
+  rpc GetReleaseContent(GetReleaseContentRequest) returns (GetReleaseContentResponse) {
+    option (google.api.http) = {
+      get: "/v1/namespaces/{namespace}/releases/{name}/content"
+    };
+  }
+
+  rpc GetReleaseHistory(GetReleaseHistoryRequest) returns (GetReleaseHistoryResponse) {
+    option (google.api.http) = {
+      get: "/v1/namespaces/{namespace}/releases/{name}/history"
+    };
+  }
+
+  //rpc GetVersion(GetVersionRequest) returns (GetVersionResponse) {
+  //  option (google.api.http) = {
+  //    get: "/v1/version"
+  //  };
+  //}
+
+  rpc RollbackRelease(RollbackReleaseRequest) returns (RollbackReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1/namespaces/{namespace}/releases/{name}/version/{version}"
+    };
+  }
+
+  rpc RunReleaseTest(TestReleaseRequest) returns (stream TestReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1/namespaces/{namespace}/releases/{name}/tests"
+    };
+  }
 }

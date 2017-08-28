@@ -17,27 +17,24 @@ const (
 	requirementsFile = "requirements.yaml"
 )
 
-func NewHelmRegistryClient(addr string) Registry {
-	return &helmRegistry{addr: addr}
+func NewHelmRegistryClient(addr string, logger Logger) Registry {
+	client, err := v1.NewClient(addr)
+	if err != nil {
+		panic(err)
+	}
+	return &helmRegistry{addr: addr, client: client, logger: logger}
 }
 
 type helmRegistry struct {
 	addr   string
 	client *v1.Client
+	logger Logger
 }
-
-func (r *helmRegistry) Connect() error {
-	var err error
-	r.client, err = v1.NewClient(r.addr)
-	return err
-}
-
-func (r *helmRegistry) Shutdown() {}
 
 func (r *helmRegistry) ListSpaces(ctx context.Context, req *ListSpacesRequest) (*ListSpacesResponse, error) {
 	listResp, err := r.client.ListSpaces(req.Start, req.Limit)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	return &ListSpacesResponse{
 		Spaces: listResp.Items,
@@ -50,18 +47,18 @@ func (r *helmRegistry) ListSpaces(ctx context.Context, req *ListSpacesRequest) (
 func (r *helmRegistry) CreateSpace(ctx context.Context, req *CreateSpaceRequest) (*CreateSpaceResponse, error) {
 	createResp, err := r.client.CreateSpace(req.Space)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	return &CreateSpaceResponse{
 		Space: req.Space,
 		Link:  createResp.Link,
-	}, err
+	}, nil
 }
 
 func (r *helmRegistry) DeleteSpace(ctx context.Context, req *DeleteSpaceRequest) (*DeleteSpaceResponse, error) {
 	err := r.client.DeleteSpace(req.Space)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	return &DeleteSpaceResponse{}, nil
 }
@@ -70,7 +67,7 @@ func (r *helmRegistry) DeleteSpace(ctx context.Context, req *DeleteSpaceRequest)
 func (r *helmRegistry) ListCharts(ctx context.Context, req *ListChartsRequest) (*ListChartsResponse, error) {
 	listResp, err := r.client.ListCharts(req.Space, req.Start, req.Limit)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 
 	return &ListChartsResponse{
@@ -86,7 +83,7 @@ func (r *helmRegistry) ListCharts(ctx context.Context, req *ListChartsRequest) (
 func (r *helmRegistry) ListChartVersions(ctx context.Context, req *ListChartVersionsRequest) (*ListChartVersionsResponse, error) {
 	listResp, err := r.client.ListVersions(req.Space, req.Chart, req.Start, req.Limit)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 
 	return &ListChartVersionsResponse{
@@ -103,7 +100,7 @@ func (r *helmRegistry) ListChartVersions(ctx context.Context, req *ListChartVers
 func (r *helmRegistry) GetChartMetadata(ctx context.Context, req *GetChartMetadataRequest) (*GetChartMetadataResponse, error) {
 	tmpResp, err := r.client.FetchVersionMetadata(req.Space, req.Chart, req.Version)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 
 	resp := GetChartMetadataResponse{
@@ -121,7 +118,7 @@ func (r *helmRegistry) GetChartMetadata(ctx context.Context, req *GetChartMetada
 func (r *helmRegistry) GetChartValues(ctx context.Context, req *GetChartValuesRequest) (*GetChartValuesResponse, error) {
 	raw, err := r.client.FetchVersionValues(req.Space, req.Chart, req.Version)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	values := map[string]interface{}{}
 	err = json.Unmarshal(raw, &values)
@@ -135,7 +132,7 @@ func (r *helmRegistry) GetChartValues(ctx context.Context, req *GetChartValuesRe
 func (r *helmRegistry) fetchChartFile(ctx context.Context, space, chart, ver, file string) ([]byte, error) {
 	data, err := r.client.DownloadVersion(space, chart, ver)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	ch, err := chartutil.LoadArchive(bytes.NewReader(data))
 	if err != nil {
@@ -153,7 +150,7 @@ func (r *helmRegistry) fetchChartFile(ctx context.Context, space, chart, ver, fi
 func (r *helmRegistry) GetChartReadme(ctx context.Context, req *GetChartReadmeRequest) (*GetChartReadmeResponse, error) {
 	data, err := r.fetchChartFile(ctx, req.Space, req.Chart, req.Version, readmeFile)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	return &GetChartReadmeResponse{data}, nil
 }
@@ -179,7 +176,7 @@ func (r *helmRegistry) GetChartRequirements(ctx context.Context, req *GetChartRe
 func (r *helmRegistry) PushChart(ctx context.Context, req *PushChartRequest) (*PushChartResponse, error) {
 	pushResp, err := r.client.UploadChart(req.Space, req.Data)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	return &PushChartResponse{
 		Space:   pushResp.Space,
@@ -192,7 +189,7 @@ func (r *helmRegistry) PushChart(ctx context.Context, req *PushChartRequest) (*P
 func (r *helmRegistry) FetchChart(ctx context.Context, req *FetchChartRequest) (*FetchChartResponse, error) {
 	data, err := r.client.DownloadVersion(req.Space, req.Chart, req.Version)
 	if err != nil {
-		return nil, err
+		return nil, errorFromHelmRegistry(err)
 	}
 	return &FetchChartResponse{
 		Data: data,
