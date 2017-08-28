@@ -7,7 +7,6 @@ import (
 	"github.com/golang/glog"
 	pb "github.com/weiwei04/compass/pkg/api/services/compass"
 	"github.com/weiwei04/compass/pkg/chart"
-	hapi_release "k8s.io/helm/pkg/proto/hapi/release"
 	//"go.uber.org/zap"
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -22,18 +21,18 @@ func newContext() context.Context {
 	return metadata.NewContext(context.TODO(), md)
 }
 
-func stripChartFiles(release *hapi_release.Release) *hapi_release.Release {
-	release.Chart.Files = nil
-	return release
-}
-
-// NOTE: protobuf.Any is a raw file, it can't Marshal into a proper json object
-func stripChartsFiles(releases []*hapi_release.Release) []*hapi_release.Release {
-	for i := range releases {
-		releases[i].Chart.Files = nil
-	}
-	return releases
-}
+//func stripChartFiles(release *hapi_release.Release) *hapi_release.Release {
+//	release.Chart.Files = nil
+//	return release
+//}
+//
+//// NOTE: protobuf.Any is a raw file, it can't Marshal into a proper json object
+//func stripChartsFiles(releases []*hapi_release.Release) []*hapi_release.Release {
+//	for i := range releases {
+//		releases[i].Chart.Files = nil
+//	}
+//	return releases
+//}
 
 type compassServer struct {
 	config Config
@@ -85,6 +84,8 @@ func newCompassServer(ctx context.Context, config Config) (*compassServer, error
 }
 
 func (s *compassServer) CreateRelease(ctx context.Context, req *pb.CreateReleaseRequest) (*pb.CreateReleaseResponse, error) {
+	glog.V(4).Infof("CreateRelease(name:%s, chart:%s)",
+		req.Name, req.GetChart())
 	var resp pb.CreateReleaseResponse
 	chart, err := s.registry.Get(req.GetChart())
 	if err != nil {
@@ -110,18 +111,22 @@ func (s *compassServer) CreateRelease(ctx context.Context, req *pb.CreateRelease
 	// TODO: wrap ctx with newContext
 	tillerResp, err := s.tiller.InstallRelease(newContext(), tillerReq)
 	if tillerResp != nil {
-		resp.Release = stripChartFiles(tillerResp.Release)
+		resp.Release = pb.CompassRelease(tillerResp.Release)
 	}
 	return &resp, err
 }
 
 func (s *compassServer) UpdateRelease(ctx context.Context, req *pb.UpdateReleaseRequest) (*pb.UpdateReleaseResponse, error) {
+	glog.V(4).Infof("UpdateRelease(name:%s, version:%d, namespace:%s)",
+		req.Name, req.Version, req.Namespace)
 	getReq := &tiller.GetReleaseContentRequest{
-		Name: req.Name,
-		//Version: req.Version,
+		Name:    req.Name,
+		Version: req.Version,
 	}
 	getResp, err := s.tiller.GetReleaseContent(newContext(), getReq)
 	if err != nil {
+		glog.V(3).Infof("GetReleaseContent(name:%s, version:%d) failed, err:%s",
+			req.Name, req.Version, err)
 		return nil, err
 	}
 	chart := getResp.Release.Chart
@@ -133,17 +138,19 @@ func (s *compassServer) UpdateRelease(ctx context.Context, req *pb.UpdateRelease
 
 	var resp pb.UpdateReleaseResponse
 	updateResp, err := s.tiller.UpdateRelease(newContext(), updateReq)
-	if updateResp != nil {
-		resp.Release = stripChartFiles(updateResp.Release)
+	if err != nil {
+		resp.Release = pb.CompassRelease(updateResp.Release)
 	}
 
 	return &resp, err
 }
 
 func (s *compassServer) UpgradeRelease(ctx context.Context, req *pb.UpgradeReleaseRequest) (*pb.UpgradeReleaseResponse, error) {
+	glog.V(4).Infof("UpgradeRelease(name:%s, chart:%s, namespace:%s)",
+		req.Name, req.GetChart(), req.Namespace)
 	chart, err := s.registry.Get(req.GetChart())
 	if err != nil {
-		glog.V(4).Infof("GetChart from registry failed, err:%s", err)
+		glog.V(3).Infof("GetChart(chart:%s) from registry failed, err:%s", req.GetChart(), err)
 		return nil, err
 	}
 
@@ -156,13 +163,15 @@ func (s *compassServer) UpgradeRelease(ctx context.Context, req *pb.UpgradeRelea
 	// TODO: wrap ctx with newContext
 	var resp pb.UpgradeReleaseResponse
 	upgradeResp, err := s.tiller.UpdateRelease(newContext(), upgradeReq)
-	if upgradeResp != nil {
-		resp.Release = stripChartFiles(upgradeResp.Release)
+	if err != nil {
+		resp.Release = pb.CompassRelease(upgradeResp.Release)
 	}
 	return &resp, err
 }
 
 func (s *compassServer) DeleteRelease(ctx context.Context, req *pb.DeleteReleaseRequest) (*pb.DeleteReleaseResponse, error) {
+	glog.V(4).Infof("DeleteRelease(name:%s, namespace:%s)",
+		req.Name, req.Namespace)
 	uninstallReq := &tiller.UninstallReleaseRequest{
 		Name:         req.Name,
 		DisableHooks: req.DisableHooks,
@@ -171,28 +180,31 @@ func (s *compassServer) DeleteRelease(ctx context.Context, req *pb.DeleteRelease
 	}
 	uninstallResp, err := s.tiller.UninstallRelease(newContext(), uninstallReq)
 	if err != nil {
-		glog.V(4).Infof("UninstallRelease(name:%s) failed, err:%s",
+		glog.V(3).Infof("UninstallRelease(name:%s) failed, err:%s",
 			req.Name, err)
 		return nil, err
 	}
 	return &pb.DeleteReleaseResponse{
-		Release: stripChartFiles(uninstallResp.Release),
+		Release: pb.CompassRelease(uninstallResp.Release),
 		Info:    uninstallResp.Info,
 	}, err
 }
 
 func (s *compassServer) ListReleases(ctx context.Context, req *pb.ListReleasesRequest) (*pb.ListReleasesResponse, error) {
-	// TODO: filter by namespace
+	glog.V(4).Infof("ListReleases(limit:%d, offset:%s, namespace:%s)",
+		req.Limit, req.Offset, req.Namespace)
 	listReq := &tiller.ListReleasesRequest{
 		Limit:     req.Limit,
 		Offset:    req.Offset,
 		SortBy:    tiller.ListSort_NAME,
 		SortOrder: tiller.ListSort_ASC,
+		Namespace: req.Namespace,
 	}
 
 	cli, err := s.tiller.ListReleases(newContext(), listReq)
 	if err != nil {
-		glog.Errorf("ListReleases failed, err:%s", err)
+		glog.Errorf("ListReleases(limit:%d, offset:%s, namespace:%s) failed, err:%s",
+			req.Limit, req.Offset, req.Namespace, err)
 		return nil, err
 	}
 
@@ -209,7 +221,7 @@ func (s *compassServer) ListReleases(ctx context.Context, req *pb.ListReleasesRe
 				Count:    msg.Count,
 				Next:     msg.Next,
 				Total:    msg.Total,
-				Releases: stripChartsFiles(msg.Releases),
+				Releases: pb.CompassReleaseSlice(msg.Releases),
 			}
 		}
 	}
@@ -218,6 +230,8 @@ func (s *compassServer) ListReleases(ctx context.Context, req *pb.ListReleasesRe
 }
 
 func (s *compassServer) GetReleaseStatus(ctx context.Context, req *pb.GetReleaseStatusRequest) (*pb.GetReleaseStatusResponse, error) {
+	glog.V(4).Infof("GetReleaseStatus(name:%s, version:%d, namespace:%s)",
+		req.Name, req.Version, req.Namespace)
 	statusReq := &tiller.GetReleaseStatusRequest{
 		Name:    req.Name,
 		Version: req.Version,
@@ -230,12 +244,14 @@ func (s *compassServer) GetReleaseStatus(ctx context.Context, req *pb.GetRelease
 	}
 	return &pb.GetReleaseStatusResponse{
 		Name:      resp.Name,
-		Info:      resp.Info,
+		Info:      pb.CompassReleaseInfo(resp.Info),
 		Namespace: resp.Namespace,
 	}, nil
 }
 
 func (s *compassServer) GetReleaseContent(ctx context.Context, req *pb.GetReleaseContentRequest) (*pb.GetReleaseContentResponse, error) {
+	glog.V(4).Infof("GetReleaseContent(name:%s, version:%d, namespace:%s)",
+		req.Name, req.Version, req.Namespace)
 	contentReq := &tiller.GetReleaseContentRequest{
 		Name:    req.Name,
 		Version: req.Version,
@@ -247,11 +263,13 @@ func (s *compassServer) GetReleaseContent(ctx context.Context, req *pb.GetReleas
 		return nil, err
 	}
 	return &pb.GetReleaseContentResponse{
-		Release: stripChartFiles(resp.Release),
+		Release: pb.CompassRelease(resp.Release),
 	}, nil
 }
 
 func (s *compassServer) GetReleaseHistory(ctx context.Context, req *pb.GetReleaseHistoryRequest) (*pb.GetReleaseHistoryResponse, error) {
+	glog.V(4).Infof("GetReleaseHistory(name:%s, namespace:%s, max:%d)",
+		req.Name, req.Namespace, req.Max)
 	historyReq := &tiller.GetHistoryRequest{
 		Name: req.Name,
 		Max:  req.Max,
@@ -263,11 +281,13 @@ func (s *compassServer) GetReleaseHistory(ctx context.Context, req *pb.GetReleas
 		return nil, err
 	}
 	return &pb.GetReleaseHistoryResponse{
-		Releases: stripChartsFiles(resp.Releases),
+		Releases: pb.CompassReleaseSlice(resp.Releases),
 	}, nil
 }
 
 func (s *compassServer) RollbackRelease(ctx context.Context, req *pb.RollbackReleaseRequest) (*pb.RollbackReleaseResponse, error) {
+	glog.V(4).Infof("RollbackRelease(name:%s, namespace:%s, version:%d)",
+		req.Name, req.Namespace, req.Version)
 	rollbackReq := &tiller.RollbackReleaseRequest{
 		Name:         req.Name,
 		DryRun:       req.DryRun,
@@ -284,11 +304,13 @@ func (s *compassServer) RollbackRelease(ctx context.Context, req *pb.RollbackRel
 			req.Name, req.Version, err)
 	}
 	return &pb.RollbackReleaseResponse{
-		Release: stripChartFiles(resp.Release),
+		Release: pb.CompassRelease(resp.Release),
 	}, nil
 }
 
 func (s *compassServer) RunReleaseTest(req *pb.TestReleaseRequest, stream pb.CompassService_RunReleaseTestServer) error {
+	glog.V(4).Infof("RunReleaseTest(name:%s, namespace:%s)",
+		req.Name, req.Namespace)
 	testReq := &tiller.TestReleaseRequest{
 		Name:    req.Name,
 		Timeout: req.Timeout,

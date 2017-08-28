@@ -14,16 +14,16 @@ func defaultRegistryClient() (api.Registry, error) {
 	if registryAddr == "" {
 		registryAddr = "http://192.168.99.100:32588"
 	}
-	client := api.NewHelmRegistryClient(registryAddr)
+	client := api.NewHelmRegistryClient(registryAddr, nil)
 	return client, nil
 }
 
 func defaultReleaseClient() (api.Release, error) {
 	compassAddr := os.Getenv("COMPASS_ADDR")
 	if compassAddr == "" {
-		compassAddr = "192.168.99.100:32589"
+		compassAddr = "http://192.168.99.100:32589"
 	}
-	client := api.NewReleaseClient(compassAddr)
+	client := api.NewReleaseClient(compassAddr, nil)
 	return client, nil
 }
 

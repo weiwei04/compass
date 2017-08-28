@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	//"fmt"
 
 	"github.com/weiwei04/compass/pkg/services/compass"
-	"go.uber.org/zap"
+	//"go.uber.org/zap"
 )
 
 var (
@@ -25,17 +25,17 @@ func main() {
 }
 
 func runServer() {
-	logger, err := zap.NewProduction()
-	if err != nil {
-		panic(fmt.Sprintf("New Logger failed, err:%s", err))
-	}
+	//logger, err := zap.NewProduction()
+	//if err != nil {
+	//	panic(fmt.Sprintf("New Logger failed, err:%s", err))
+	//}
 	config := compass.Config{
 		TillerAddr:   *tillerAddr,
 		RegistryAddr: *registryAddr,
 		RPCAddr:      *grpcAddr,
 		RESTAddr:     *restAddr,
 		Mock:         *mock,
-		Logger:       logger,
+		//Logger:       logger,
 	}
 	srv := compass.NewServer(config)
 	srv.Serve()

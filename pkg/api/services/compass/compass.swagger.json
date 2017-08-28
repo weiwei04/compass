@@ -380,39 +380,6 @@
     }
   },
   "definitions": {
-    "HookEvent": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN",
-        "PRE_INSTALL",
-        "POST_INSTALL",
-        "PRE_DELETE",
-        "POST_DELETE",
-        "PRE_UPGRADE",
-        "POST_UPGRADE",
-        "PRE_ROLLBACK",
-        "POST_ROLLBACK",
-        "RELEASE_TEST_SUCCESS",
-        "RELEASE_TEST_FAILURE"
-      ],
-      "default": "UNKNOWN"
-    },
-    "StatusCode": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN",
-        "DEPLOYED",
-        "DELETED",
-        "SUPERSEDED",
-        "FAILED",
-        "DELETING",
-        "PENDING_INSTALL",
-        "PENDING_UPGRADE",
-        "PENDING_ROLLBACK"
-      ],
-      "default": "UNKNOWN",
-      "description": " - UNKNOWN: Status_UNKNOWN indicates that a release is in an uncertain state.\n - DEPLOYED: Status_DEPLOYED indicates that the release has been pushed to Kubernetes.\n - DELETED: Status_DELETED indicates that a release has been deleted from Kubermetes.\n - SUPERSEDED: Status_SUPERSEDED indicates that this release object is outdated and a newer one exists.\n - FAILED: Status_FAILED indicates that the release was not successfully deployed.\n - DELETING: Status_DELETING indicates that a delete operation is underway.\n - PENDING_INSTALL: Status_PENDING_INSTALL indicates that an install operation is underway.\n - PENDING_UPGRADE: Status_PENDING_UPGRADE indicates that an upgrade operation is underway.\n - PENDING_ROLLBACK: Status_PENDING_ROLLBACK indicates that an rollback operation is underway."
-    },
     "chartChart": {
       "type": "object",
       "properties": {
@@ -606,7 +573,7 @@
       "type": "object",
       "properties": {
         "release": {
-          "$ref": "#/definitions/releaseRelease"
+          "$ref": "#/definitions/compassRelease"
         }
       }
     },
@@ -641,8 +608,8 @@
       "type": "object",
       "properties": {
         "release": {
-          "$ref": "#/definitions/releaseRelease",
-          "description": "Release is the release that was marked deleted."
+          "$ref": "#/definitions/compassRelease",
+          "title": "Release is the release that was marked deleted.\nhapi.release.Release release = 1;"
         },
         "info": {
           "type": "string",
@@ -674,8 +641,8 @@
       "type": "object",
       "properties": {
         "release": {
-          "$ref": "#/definitions/releaseRelease",
-          "title": "The release content"
+          "$ref": "#/definitions/compassRelease",
+          "title": "The release content\nhapi.release.Release release = 1;"
         }
       },
       "description": "GetReleaseContentResponse is a response containing the contents of a release."
@@ -704,8 +671,9 @@
         "releases": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/releaseRelease"
-          }
+            "$ref": "#/definitions/compassRelease"
+          },
+          "title": "repeated hapi.release.Release releases = 1;"
         }
       },
       "description": "GetHistoryResponse is received in response to a GetHistory rpc."
@@ -737,7 +705,7 @@
           "description": "Name is the name of the release."
         },
         "info": {
-          "$ref": "#/definitions/releaseInfo",
+          "$ref": "#/definitions/compassInfo",
           "description": "Info contains information about the release."
         },
         "namespace": {
@@ -746,6 +714,29 @@
         }
       },
       "description": "GetReleaseStatusResponse is the response indicating the status of the named release."
+    },
+    "compassInfo": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/compassStatus"
+        },
+        "first_deployed": {
+          "type": "string",
+          "format": "int64"
+        },
+        "last_deployed": {
+          "type": "string",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "int64"
+        },
+        "Description": {
+          "type": "string"
+        }
+      }
     },
     "compassListReleasesRequest": {
       "type": "object",
@@ -786,12 +777,36 @@
         "releases": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/releaseRelease"
+            "$ref": "#/definitions/compassRelease"
           },
-          "description": "Releases is the list of found release objects."
+          "title": "Releases is the list of found release objects.\nrepeated hapi.release.Release releases = 4;"
         }
       },
       "description": "ListReleasesResponse is a list of releases."
+    },
+    "compassRelease": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "info": {
+          "$ref": "#/definitions/compassInfo"
+        },
+        "chart": {
+          "$ref": "#/definitions/chartChart"
+        },
+        "config": {
+          "$ref": "#/definitions/chartConfig"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      }
     },
     "compassRollbackReleaseRequest": {
       "type": "object",
@@ -844,10 +859,29 @@
       "type": "object",
       "properties": {
         "release": {
-          "$ref": "#/definitions/releaseRelease"
+          "$ref": "#/definitions/compassRelease",
+          "title": "hapi.release.Release release = 1;"
         }
       },
       "description": "RollbackReleaseResponse is the response to an update request."
+    },
+    "compassStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "resources": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "last_test_suite_run": {
+          "$ref": "#/definitions/releaseTestSuite"
+        }
+      }
     },
     "compassTestReleaseRequest": {
       "type": "object",
@@ -906,7 +940,7 @@
       "type": "object",
       "properties": {
         "release": {
-          "$ref": "#/definitions/releaseRelease"
+          "$ref": "#/definitions/compassRelease"
         }
       }
     },
@@ -931,30 +965,9 @@
       "type": "object",
       "properties": {
         "release": {
-          "$ref": "#/definitions/releaseRelease"
+          "$ref": "#/definitions/compassRelease"
         }
       }
-    },
-    "hapireleaseStatus": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "$ref": "#/definitions/StatusCode"
-        },
-        "resources": {
-          "type": "string",
-          "description": "Cluster resources as kubectl would print them."
-        },
-        "notes": {
-          "type": "string",
-          "title": "Contains the rendered templates/NOTES.txt if available"
-        },
-        "last_test_suite_run": {
-          "$ref": "#/definitions/releaseTestSuite",
-          "title": "LastTestSuiteRun provides results on the last test run on a release"
-        }
-      },
-      "description": "Status defines the status of a release."
     },
     "protobufAny": {
       "type": "object",
@@ -970,112 +983,6 @@
         }
       },
       "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-    },
-    "releaseHook": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string",
-          "description": "Kind is the Kubernetes kind."
-        },
-        "path": {
-          "type": "string",
-          "description": "Path is the chart-relative path to the template."
-        },
-        "manifest": {
-          "type": "string",
-          "description": "Manifest is the manifest contents."
-        },
-        "events": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/HookEvent"
-          },
-          "description": "Events are the events that this hook fires on."
-        },
-        "last_run": {
-          "type": "string",
-          "format": "date-time",
-          "description": "LastRun indicates the date/time this was last run."
-        },
-        "weight": {
-          "type": "integer",
-          "format": "int32",
-          "title": "Weight indicates the sort order for execution among similar Hook type"
-        }
-      },
-      "description": "Hook defines a hook object."
-    },
-    "releaseInfo": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "$ref": "#/definitions/hapireleaseStatus"
-        },
-        "first_deployed": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "last_deployed": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "deleted": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Deleted tracks when this object was deleted."
-        },
-        "Description": {
-          "type": "string",
-          "description": "Description is human-friendly \"log entry\" about this release."
-        }
-      },
-      "description": "Info describes release information."
-    },
-    "releaseRelease": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "title": "Name is the name of the release"
-        },
-        "info": {
-          "$ref": "#/definitions/releaseInfo",
-          "title": "Info provides information about a release"
-        },
-        "chart": {
-          "$ref": "#/definitions/chartChart",
-          "description": "Chart is the chart that was released."
-        },
-        "config": {
-          "$ref": "#/definitions/chartConfig",
-          "description": "Config is the set of extra Values added to the chart.\nThese values override the default values inside of the chart."
-        },
-        "manifest": {
-          "type": "string",
-          "description": "Manifest is the string representation of the rendered template."
-        },
-        "hooks": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/releaseHook"
-          },
-          "description": "Hooks are all of the hooks declared for this release."
-        },
-        "version": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Version is an int32 which represents the version of the release."
-        },
-        "namespace": {
-          "type": "string",
-          "description": "Namespace is the kubernetes namespace of the release."
-        }
-      },
-      "description": "Release describes a deployment of a chart, together with the chart\nand the variables used to deploy that chart."
     },
     "releaseTestRun": {
       "type": "object",

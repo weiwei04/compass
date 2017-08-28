@@ -2,8 +2,9 @@ package client
 
 import (
 	"fmt"
-	"github.com/caicloud/helm-registry/pkg/errors"
 	"net/http"
+
+	"github.com/caicloud/helm-registry/pkg/errors"
 )
 
 type HTTPCodedError interface {

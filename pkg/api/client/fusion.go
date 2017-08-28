@@ -12,10 +12,13 @@ type Fusion interface {
 }
 
 func NewFusion(config Config) Fusion {
+	if config.Logger == nil {
+		config.Logger = &logger{}
+	}
 	return &fusion{
 		logger:   config.Logger,
-		release:  NewReleaseClient(config.ReleaseAddr),
-		registry: NewHelmRegistryClient(config.RegistryAddr),
+		release:  NewReleaseClient(config.ReleaseAddr, config.Logger),
+		registry: NewHelmRegistryClient(config.RegistryAddr, config.Logger),
 	}
 }
 

@@ -1,3 +1,4 @@
 #!/bin/bash
-export COMPASS_ADDR=$TILLER_HOST
+export COMPASS_ADDR=http://192.168.66.11:32589
+export HELM_REGISTRY_ADDR=http://192.168.66.11:32588
 $HELM_PLUGIN_DIR/fusion $@

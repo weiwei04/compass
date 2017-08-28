@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/golang/glog"
+
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	compassapi "github.com/weiwei04/compass/pkg/api/services/compass"
-	"go.uber.org/zap"
+	//"go.uber.org/zap"
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -20,9 +22,6 @@ func newRESTServer(ctx context.Context, config Config) restServer {
 }
 
 func (s restServer) Serve(addr string) error {
-	zapLogger, _ := zap.NewProduction()
-	sugger := zapLogger.Sugar()
-
 	opts := []grpc.DialOption{
 		grpc.WithTimeout(10 * time.Second),
 		grpc.WithInsecure(),
@@ -43,12 +42,12 @@ func (s restServer) Serve(addr string) error {
 	}
 
 	mux := runtime.NewServeMux()
-	sugger.Infof("Created Gateway ServeMux")
+	glog.Infof("Created Gateway ServeMux")
 	err = compassapi.RegisterCompassServiceHandler(context.Background(), mux, conn)
 	if err != nil {
-		sugger.Errorf("RegisterCompassServiceHandlerFromEndpoint:%s failed", s.config.RESTAddr)
+		glog.Errorf("RegisterCompassServiceHandlerFromEndpoint:%s failed", s.config.RESTAddr)
 		return err
 	}
-	sugger.Infof("Gateway will serve at /")
+	glog.Infof("Gateway will serve at /")
 	return http.ListenAndServe(s.config.RESTAddr, mux)
 }

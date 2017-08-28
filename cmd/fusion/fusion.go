@@ -1,10 +1,10 @@
 package main
 
 import (
-	"os"
-
+	"flag"
 	"github.com/urfave/cli"
 	"github.com/weiwei04/compass/pkg/clicommands"
+	"os"
 )
 
 const (
@@ -15,6 +15,8 @@ const (
 )
 
 func main() {
+	flag.Set("logtostderr", "true")
+	flag.Parse()
 	app := cli.NewApp()
 	app.Name = "fusion"
 	app.Version = "0.0.1"

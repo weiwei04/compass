@@ -2,17 +2,44 @@ syntax = "proto3";
 
 package compass;
 
-import "hapi/release/release.proto";
-import "hapi/release/status.proto";
+//import "hapi/release/release.proto";
+//import "hapi/release/status.proto";
 import "hapi/release/test_run.proto";
-import "hapi/release/info.proto";
+import "hapi/release/test_suite.proto";
+//import "hapi/release/info.proto";
 import "hapi/chart/config.proto";
+import "hapi/chart/chart.proto";
 import "google/api/annotations.proto";
+//import "google/protobuf/timestamp.proto";
 //import "google/protobuf/empty.proto";
 //import "google/protobuf/duration.proto";
 //import "google/protobuf/timestamp.proto";
 
 option go_package = "compass";
+
+message Status {
+  int32 code = 1;
+  string resources = 2;
+  string notes = 3;
+  hapi.release.TestSuite last_test_suite_run = 4;
+}
+
+message Info {
+  Status status = 1;
+  int64 first_deployed = 2;
+  int64 last_deployed = 3;
+  int64 deleted = 4;
+  string Description = 5;
+}
+
+message Release {
+  string name = 1;
+  Info info = 2;
+  hapi.chart.Chart chart = 3;
+  hapi.chart.Config config = 4;
+  int32 version = 5;
+  string namespace = 6;
+}
 
 message CreateReleaseRequest {
   string chart = 1;
@@ -24,7 +51,7 @@ message CreateReleaseRequest {
 }
 
 message CreateReleaseResponse {
-  hapi.release.Release release = 1;
+  Release release = 1;
 }
 
 message UpdateReleaseRequest {
@@ -35,7 +62,7 @@ message UpdateReleaseRequest {
 }
 
 message UpdateReleaseResponse {
-  hapi.release.Release release = 1;
+  Release release = 1;
 }
 
 message UpgradeReleaseRequest {
@@ -46,7 +73,7 @@ message UpgradeReleaseRequest {
 }
 
 message UpgradeReleaseResponse {
-  hapi.release.Release release = 1;
+  Release release = 1;
 }
 
 // ListReleasesRequest requests a list of releases.
@@ -110,7 +137,8 @@ message ListReleasesResponse {
   int64 total  = 3;
 
   // Releases is the list of found release objects.
-  repeated hapi.release.Release releases = 4;
+  //repeated hapi.release.Release releases = 4;
+  repeated Release releases = 4;
 }
 
 // GetReleaseStatusRequest is a request to get the status of a release.
@@ -129,7 +157,7 @@ message GetReleaseStatusResponse {
   string name = 1;
 
   // Info contains information about the release.
-  hapi.release.Info info = 2;
+  Info info = 2;
 
   // Namesapce the release was released into
   string namespace = 3;
@@ -148,7 +176,8 @@ message GetReleaseContentRequest {
 // GetReleaseContentResponse is a response containing the contents of a release.
 message GetReleaseContentResponse {
   // The release content
-  hapi.release.Release release = 1;
+  //hapi.release.Release release = 1;
+  Release release = 1;
 }
 
 message RollbackReleaseRequest {
@@ -175,7 +204,8 @@ message RollbackReleaseRequest {
 
 // RollbackReleaseResponse is the response to an update request.
 message RollbackReleaseResponse {
-  hapi.release.Release release = 1;
+  //hapi.release.Release release = 1;
+  Release release = 1;
 }
 
 // UninstallReleaseRequest represents a request to uninstall a named release.
@@ -193,7 +223,8 @@ message DeleteReleaseRequest {
 // UninstallReleaseResponse represents a successful response to an uninstall request.
 message DeleteReleaseResponse {
   // Release is the release that was marked deleted.
-  hapi.release.Release release = 1;
+  //hapi.release.Release release = 1;
+  Release release = 1;
   // Info is an uninstall message
   string info = 2;
 }
@@ -217,7 +248,8 @@ message GetReleaseHistoryRequest {
 
 // GetHistoryResponse is received in response to a GetHistory rpc.
 message GetReleaseHistoryResponse {
-  repeated hapi.release.Release releases = 1;
+  //repeated hapi.release.Release releases = 1;
+  repeated Release releases = 1;
 }
 
 // TestReleaseRequest is a request to get the status of a release.

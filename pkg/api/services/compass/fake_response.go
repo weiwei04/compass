@@ -9,7 +9,7 @@ import (
 
 func NewFakeCreateReleaseResponse(req *CreateReleaseRequest) *CreateReleaseResponse {
 	return &CreateReleaseResponse{
-		Release: &hapi_release.Release{
+		Release: CompassRelease(&hapi_release.Release{
 			Name:      req.Name,
 			Namespace: req.Namespace,
 			Chart: &hapi_chart.Chart{
@@ -18,32 +18,32 @@ func NewFakeCreateReleaseResponse(req *CreateReleaseRequest) *CreateReleaseRespo
 				},
 			},
 			Config: req.Values,
-		},
+		}),
 	}
 }
 
 func NewFakeDeleteReleaseResponse(req *DeleteReleaseRequest) *DeleteReleaseResponse {
 	return &DeleteReleaseResponse{
-		Release: &hapi_release.Release{
+		Release: CompassRelease(&hapi_release.Release{
 			Name:      req.Name,
 			Namespace: req.Namespace,
-		},
+		}),
 	}
 }
 
 func NewFakeUpdateReleaseResponse(req *UpdateReleaseRequest) *UpdateReleaseResponse {
 	return &UpdateReleaseResponse{
-		Release: &hapi_release.Release{
+		Release: CompassRelease(&hapi_release.Release{
 			Name:      req.Name,
 			Namespace: req.Namespace,
 			Config:    req.Values,
-		},
+		}),
 	}
 }
 
 func NewFakeUpgradeReleaseResponse(req *UpgradeReleaseRequest) *UpgradeReleaseResponse {
 	return &UpgradeReleaseResponse{
-		Release: &hapi_release.Release{
+		Release: CompassRelease(&hapi_release.Release{
 			Name:      req.Name,
 			Namespace: req.Namespace,
 			Chart: &hapi_chart.Chart{
@@ -52,14 +52,14 @@ func NewFakeUpgradeReleaseResponse(req *UpgradeReleaseRequest) *UpgradeReleaseRe
 				},
 			},
 			Config: req.Values,
-		},
+		}),
 	}
 }
 
 func NewFakeListReleasesResponse(req *ListReleasesRequest) *ListReleasesResponse {
-	releases := []*hapi_release.Release{}
+	releases := []*Release{}
 	for i := int64(0); i < req.Limit; i++ {
-		releases = append(releases, &hapi_release.Release{
+		releases = append(releases, CompassRelease(&hapi_release.Release{
 			Name:      fmt.Sprintf("release-%d", i),
 			Namespace: req.Namespace,
 			Chart: &hapi_chart.Chart{
@@ -67,7 +67,7 @@ func NewFakeListReleasesResponse(req *ListReleasesRequest) *ListReleasesResponse
 					Name: "myspace/mychart:v0.1.0",
 				},
 			},
-		})
+		}))
 	}
 	return &ListReleasesResponse{
 		Count:    req.Limit,
@@ -86,21 +86,21 @@ func NewFakeGetReleaseStatusResponse(req *GetReleaseStatusRequest) *GetReleaseSt
 
 func NewFakeGetReleaseContentResponse(req *GetReleaseContentRequest) *GetReleaseContentResponse {
 	return &GetReleaseContentResponse{
-		Release: &hapi_release.Release{
+		Release: CompassRelease(&hapi_release.Release{
 			Name:      req.Name,
 			Namespace: req.Namespace,
 			Version:   req.Version,
-		},
+		}),
 	}
 }
 
 func NewFakeGetReleaseHistoryResponse(req *GetReleaseHistoryRequest) *GetReleaseHistoryResponse {
-	releases := []*hapi_release.Release{}
+	releases := []*Release{}
 	for i := int32(0); i < req.Max; i++ {
-		releases = append(releases, &hapi_release.Release{
+		releases = append(releases, CompassRelease(&hapi_release.Release{
 			Name:      req.Name,
 			Namespace: req.Namespace,
-		})
+		}))
 	}
 	return &GetReleaseHistoryResponse{
 		Releases: releases,
@@ -109,10 +109,10 @@ func NewFakeGetReleaseHistoryResponse(req *GetReleaseHistoryRequest) *GetRelease
 
 func NewFakeRollbackReleaseResponse(req *RollbackReleaseRequest) *RollbackReleaseResponse {
 	return &RollbackReleaseResponse{
-		Release: &hapi_release.Release{
+		Release: CompassRelease(&hapi_release.Release{
 			Name:      req.Name,
 			Namespace: req.Namespace,
-		},
+		}),
 	}
 }
 

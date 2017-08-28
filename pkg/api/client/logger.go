@@ -1,5 +1,7 @@
 package client
 
+import "fmt"
+
 type Logger interface {
 	Debugf(format string, v ...interface{})
 	Tracef(format string, v ...interface{})
@@ -10,6 +12,8 @@ type Logger interface {
 }
 
 type logger struct{}
+
+var _ Logger = &logger{}
 
 func (l logger) printf(level string, format string, v ...interface{}) {
 	log := fmt.Sprintf(format, v...)

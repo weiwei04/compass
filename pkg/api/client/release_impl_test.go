@@ -31,7 +31,7 @@ func TestReleaseImpl(t *testing.T) {
 
 	require := require.New(t)
 
-	cli := NewReleaseClient("http://127.0.0.1:8913")
+	cli := NewReleaseClient("http://127.0.0.1:8913", &logger{})
 	ctx := context.Background()
 
 	// CreateRelease
