@@ -1,0 +1,143 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    ke-app: appstore
+    ke-service: compass
+  name: compass
+  namespace: kube-system
+spec:
+  rules:
+  - host: compass.ke-cs.dev.qiniu.io
+    http:
+      paths:
+      - backend:
+          serviceName: compass
+          servicePort: 80
+        path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    ke-app: appstore
+    ke-svc: compass
+    app: helm
+    name: tiller
+  name: compass
+  namespace: kube-system
+spec:
+  ports:
+  - name: compass
+    port: 80
+    protocol: TCP
+    targetPort: 9100
+  selector:
+    ke-app: appstore
+    ke-svc: compass
+    app: helm
+    name: tiller
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    ke-app: appstore
+    ke-svc: compass
+    app: helm # must keep this
+    name: tiller # must keep this
+  name: tiller-deploy
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helm
+      name: tiller
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        ke-app: appstore
+        ke-svc: compass
+        app: helm
+        name: tiller
+    spec:
+      containers:
+      - args:
+        - --listen
+        - :44134
+        command:
+        - /tiller
+        env:
+        - name: TILLER_NAMESPACE
+          value: kube-system
+        image: gcr.io/kubernetes-helm/tiller:v2.5.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /liveness
+            port: 44135
+            scheme: HTTP
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: tiller
+        ports:
+        - containerPort: 44134
+          name: tiller
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /readiness
+            port: 44135
+            scheme: HTTP
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - args:
+        - --tiller
+        - 127.0.0.1:44134
+        - --registry
+        - http://helm-registry
+        - --rpcAddr
+        - 127.0.0.1:8911
+        - --httpAddr
+        - :9100
+        - --v=4
+        - --logtostderr
+        command:
+        - compass
+        image: hub.c.163.com/weiwei04/compass:v0.0.1
+        imagePullPolicy: IfNotPresent
+        name: compass
+        ports:
+        - containerPort: 9100
+          name: compass
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
