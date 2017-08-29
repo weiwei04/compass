@@ -40,6 +40,7 @@ func CompassRelease(in *hapi_release.Release) *Release {
 	// strip un marshalable google.prototbuf.Any files
 	if out.Chart != nil {
 		out.Chart.Files = nil
+		out.Chart.Dependencies = nil
 	}
 	return out
 }
