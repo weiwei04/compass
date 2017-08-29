@@ -124,7 +124,7 @@ spec:
         - --logtostderr
         command:
         - compass
-        image: hub.c.163.com/weiwei04/compass:0.2.17
+        image: hub.c.163.com/weiwei04/compass:v0.0.1
         imagePullPolicy: IfNotPresent
         name: compass
         ports:
