@@ -175,7 +175,7 @@ func (s *compassServer) DeleteRelease(ctx context.Context, req *pb.DeleteRelease
 	uninstallReq := &tiller.UninstallReleaseRequest{
 		Name:         req.Name,
 		DisableHooks: req.DisableHooks,
-		Purge:        req.Purge,
+		Purge:        true,
 		Timeout:      req.Timeout,
 	}
 	uninstallResp, err := s.tiller.UninstallRelease(newContext(), uninstallReq)
