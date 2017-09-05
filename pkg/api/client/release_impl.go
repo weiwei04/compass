@@ -13,11 +13,20 @@ import (
 
 // all the ugly things
 
-// NewCompassClient will return a default client impl
+// NewReleaseClient will return a default client impl
 func NewReleaseClient(addr string, logger Logger) Release {
 	return compassClient{
 		host:    addr,
 		httpCli: http.DefaultClient,
+		logger:  logger,
+	}
+}
+
+// NewReleaseTransportClient will return a default client with transport impl
+func NewReleaseTransportClient(addr string, transport http.RoundTripper, logger Logger) Release {
+	return compassClient{
+		host:    addr,
+		httpCli: &http.Client{Transport: transport},
 		logger:  logger,
 	}
 }

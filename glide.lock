@@ -1,5 +1,5 @@
 hash: 394170ec15dc94b8d8d85e416f81bead298c2dcc44b5fa5a104be73374283afa
-updated: 2017-08-29T00:35:42.795731389+08:00
+updated: 2017-09-05T17:23:17.389047909+08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: b26d9c308763d68093482582cea63d69be07a0f0
@@ -39,6 +39,7 @@ imports:
 - name: github.com/grpc-ecosystem/go-grpc-middleware
   version: f63a7dfb64c138bd93d5c5b896d8b33c4b08e000
   subpackages:
+  - logging
   - logging/zap
   - tags
 - name: github.com/grpc-ecosystem/grpc-gateway
@@ -123,7 +124,7 @@ imports:
   subpackages:
   - pkg/version
 - name: k8s.io/helm
-  version: 5bc7c619f85d74702e810a8325e0a24f729aa11a
+  version: bbc1f71dc03afc5f00c6ac84b9308f8ecb4f39ac
   subpackages:
   - pkg/chartutil
   - pkg/ignore
