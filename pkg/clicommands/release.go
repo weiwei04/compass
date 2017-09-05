@@ -14,6 +14,7 @@ import (
 
 	"github.com/urfave/cli"
 	api "github.com/weiwei04/compass/pkg/api/client"
+	"github.com/weiwei04/compass/pkg/api/services"
 	hapi "k8s.io/helm/pkg/proto/hapi/chart"
 )
 
@@ -89,8 +90,13 @@ var installReleaseCommand = cli.Command{
 		}
 		_, err := client.CreateRelease(context.Background(), req)
 		if err != nil {
-			glog.Errorf("CreateRelease(name:%s, namespace:%s) failed, err:%s",
-				req.Name, req.Namespace, err)
+			if e, ok := err.(services.HTTPCodedError); ok {
+				glog.Errorf("CreateRelease(name:%s, namespace:%s, chart:%s) failed, code:%d, msg:%s",
+					req.Name, req.Namespace, req.Chart, e.Code(), e.Desc())
+			} else {
+				glog.Errorf("CreateRelease(name:%s, namespace:%s) failed, err:%s",
+					req.Name, req.Namespace, err)
+			}
 			return err
 		}
 		// TODO: prettyPrint resp

@@ -10,7 +10,9 @@ import (
 	//"go.uber.org/zap"
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	tiller "k8s.io/helm/pkg/proto/hapi/services"
 )
 
@@ -91,6 +93,14 @@ func (s *compassServer) CreateRelease(ctx context.Context, req *pb.CreateRelease
 	if err != nil {
 		glog.V(3).Infof("get chart failed, chart:%s, err:%s", req.GetChart(), err)
 		return &resp, err
+	}
+
+	// check releasename exist
+	if _, err := s.tiller.GetReleaseStatus(newContext(), &tiller.GetReleaseStatusRequest{
+		Name:    req.Name,
+		Version: 0,
+	}); err == nil {
+		return nil, status.Errorf(codes.AlreadyExists, "release:%s already exist", req.Name)
 	}
 
 	// TODO: improve this
@@ -225,8 +235,6 @@ func (s *compassServer) ListReleases(ctx context.Context, req *pb.ListReleasesRe
 			}
 		}
 	}
-
-	return resp, nil
 }
 
 func (s *compassServer) GetReleaseStatus(ctx context.Context, req *pb.GetReleaseStatusRequest) (*pb.GetReleaseStatusResponse, error) {
