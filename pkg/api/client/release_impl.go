@@ -9,6 +9,7 @@ import (
 
 	"encoding/json"
 	//json "github.com/json-iterator/go"
+	"github.com/weiwei04/compass/pkg/api/services"
 )
 
 // all the ugly things
@@ -39,7 +40,7 @@ func (c compassClient) doRequestWithoutBody(ctx context.Context, method, url str
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return errorFromResponse(resp)
+		return services.ErrorFromResponse(resp)
 	}
 	return json.NewDecoder(resp.Body).Decode(out)
 }
@@ -60,7 +61,7 @@ func (c compassClient) doRequest(ctx context.Context, method, url string, in int
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return errorFromResponse(resp)
+		return services.ErrorFromResponse(resp)
 	}
 	return json.NewDecoder(resp.Body).Decode(out)
 }
