@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
 
 	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/proto/hapi/chart"
@@ -19,6 +20,14 @@ const (
 
 func NewHelmRegistryClient(addr string, logger Logger) Registry {
 	client, err := v1.NewClient(addr)
+	if err != nil {
+		panic(err)
+	}
+	return &helmRegistry{addr: addr, client: client, logger: logger}
+}
+
+func NewHelmRegistryTransportClient(addr string, transport http.RoundTripper, logger Logger) Registry {
+	client, err := v1.NewTransportClient(addr, transport)
 	if err != nil {
 		panic(err)
 	}
