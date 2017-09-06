@@ -1,7 +1,7 @@
 package: github.com/weiwei04/compass
 import:
 - package: github.com/caicloud/helm-registry
-  version: ~0.1.1
+  version: 09d1fbb7cf262b711912c6373abb96eece350757
   subpackages:
   - pkg/rest/v1
 - package: github.com/grpc-ecosystem/go-grpc-middleware
