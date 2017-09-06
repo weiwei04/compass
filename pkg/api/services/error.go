@@ -42,11 +42,11 @@ func ErrorFromGRPC(err error) error {
 }
 
 func (e *httpCodedError) Error() string {
-	return fmt.Sprintf("Code:%q, Desc:%q", e.code, e.desc)
+	return fmt.Sprintf("Code:%d, Desc:%q", e.code, e.desc)
 }
 
 func (e *httpCodedError) String() string {
-	return fmt.Sprintf("Code:%q, Desc:%q", e.code, e.desc)
+	return fmt.Sprintf("Code:%d, Desc:%q", e.code, e.desc)
 }
 
 func (e *httpCodedError) Code() int {
