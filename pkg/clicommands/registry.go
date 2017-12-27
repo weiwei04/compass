@@ -91,6 +91,7 @@ var ChartCommand = cli.Command{
 		inspectChartCommand,
 		showChartFileCommand,
 		fetchChartCommand,
+		deleteVersionCommand,
 	},
 }
 
@@ -356,5 +357,32 @@ var fetchChartCommand = cli.Command{
 		dir := ctx.String("output")
 		fileName := filepath.Join(dir, tarName)
 		return ioutil.WriteFile(fileName, resp.Data, 0644)
+	},
+}
+
+var deleteVersionCommand = cli.Command{
+	Name: "delete",
+	Usage: `delete space/chart:ver
+    for example:
+    delete myspace/mychart:0.0.1 (this will delete myspace/mychart:0.0.1 chart package)`,
+	Action: func(ctx *cli.Context) error {
+		if err := checkArgs(ctx, 1, exactArgs); err != nil {
+			return err
+		}
+		c, err := defaultRegistryClient()
+		if err != nil {
+			return err
+		}
+		arg := ctx.Args().First()
+		space, name, ver, err := splitSpaceChartVer(arg)
+		if err != nil {
+			return err
+		}
+		_, err = c.DeleteVersion(nil, &api.DeleteVersionRequest{
+			Space:   space,
+			Chart:   name,
+			Version: ver,
+		})
+		return err
 	},
 }
