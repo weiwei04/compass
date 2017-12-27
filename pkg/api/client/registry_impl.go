@@ -205,3 +205,11 @@ func (r *helmRegistry) FetchChart(ctx context.Context, req *FetchChartRequest) (
 		Data: data,
 	}, nil
 }
+
+func (r *helmRegistry) DeleteVersion(ctx context.Context, req *DeleteVersionRequest) (*DeleteVersionResponse, error) {
+	return &DeleteVersionResponse{}, r.client.DeleteVersion(req.Space, req.Chart, req.Version)
+}
+
+func (r *helmRegistry) DeleteChart(ctx context.Context, req *DeleteChartRequest) (*DeleteChartResponse, error) {
+	return &DeleteChartResponse{}, r.client.DeleteChart(req.Space, req.Chart)
+}

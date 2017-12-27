@@ -32,16 +32,6 @@ type DeleteSpaceRequest CreateSpaceRequest
 
 type DeleteSpaceResponse struct{}
 
-//func (resp *ListSpacesResponse) NewRequest() *ListSpacesRequest {
-//	if resp.IsEnd {
-//		return nil
-//	}
-//	return &ListSpacesRequest{
-//		Start: resp.offset + resp.limit,
-//		Limit: resp.limit,
-//	}
-//}
-
 type ListChartsRequest struct {
 	Space string
 	Start int
@@ -55,17 +45,6 @@ type ListChartsResponse struct {
 	limit  int
 	IsEnd  bool
 }
-
-//func (resp *ListChartsResponse) NewRequest() *ListChartsRequest {
-//	if resp.IsEnd {
-//		return nil
-//	}
-//	return &ListChartsRequest{
-//		Space: resp.space,
-//		Start: resp.offset + resp.limit,
-//		Limit: resp.limit,
-//	}
-//}
 
 type ListChartVersionsRequest struct {
 	Space string
@@ -82,18 +61,6 @@ type ListChartVersionsResponse struct {
 	limit    int
 	offset   int
 }
-
-//func (resp *ListChartVersionsResponse) NewRequest() *ListChartVersionsRequest {
-//	if resp.IsEnd {
-//		return nil
-//	}
-//	return &ListChartVersionsRequest{
-//		Space:  resp.space,
-//		Chart:  resp.chart,
-//		Limit:  resp.limit,
-//		offset: resp.offset + resp.limit,
-//	}
-//}
 
 type GetChartMetadataRequest struct {
 	Space   string
@@ -142,6 +109,17 @@ type FetchChartResponse struct {
 	Data []byte
 }
 
+type DeleteVersionRequest GetChartMetadataRequest
+
+type DeleteVersionResponse DeleteSpaceResponse
+
+type DeleteChartRequest struct {
+	Space string
+	Chart string
+}
+
+type DeleteChartResponse DeleteSpaceResponse
+
 type Registry interface {
 	// 列取space
 	ListSpaces(context.Context, *ListSpacesRequest) (*ListSpacesResponse, error)
@@ -163,4 +141,9 @@ type Registry interface {
 	PushChart(context.Context, *PushChartRequest) (*PushChartResponse, error)
 
 	FetchChart(context.Context, *FetchChartRequest) (*FetchChartResponse, error)
+
+	// 删除某个版本的 chart
+	DeleteVersion(context.Context, *DeleteVersionRequest) (*DeleteVersionResponse, error)
+	// 删除全部 chart
+	DeleteChart(context.Context, *DeleteChartRequest) (*DeleteChartResponse, error)
 }
